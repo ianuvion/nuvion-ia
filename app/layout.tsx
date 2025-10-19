@@ -1,3 +1,5 @@
+import './globals.css';
+
 export const metadata = {
   title: 'Nuvion IA',
   description: 'Starter Next.js + Clerk + Nuvion IA',
