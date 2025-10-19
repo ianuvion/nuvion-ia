@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-gray-50 to-white text-gray-900">
@@ -21,25 +23,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <aside>
           <nav className="sticky top-20 flex flex-col gap-1">
             {[
-              "Inicio",
-              "Clientes",
-              "Agentes IA",
-              "Plantillas",
-              "Flujos",
-              "Integraciones",
-              "Configuración",
-            ].map((item, i) => (
-              <a
-                key={item}
-                href="#"
-                className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm hover:bg-gray-100 ${
-                  i === 0
-                    ? "bg-gray-900 text-white hover:bg-gray-900"
-                    : "text-gray-700"
-                }`}
-              >
-                {item}
-              </a>
+              { label: "Inicio", href: "/dashboard" },
+      { label: "Clientes", href: "/clientes" },
+      { label: "Agentes IA", href: "#" },
+      { label: "Plantillas", href: "#" },
+      { label: "Flujos", href: "#" },
+      { label: "Integraciones", href: "#" },
+      { label: "Configuración", href: "#" },
+    ].map((item, i) => (
+      <Link
+        key={item.label}
+        href={item.href}
+        className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm hover:bg-gray-100 ${
+          i === 0
+            ? "bg-gray-900 text-white hover:bg-gray-900"
+            : "text-gray-700"
+        }`}
+      >
+        {item.label}
+      </Link>
             ))}
           </nav>
         </aside>
