@@ -5,6 +5,7 @@ export default function DashboardHome() {
       <p className="text-gray-600 mt-1 text-sm">
         Este es el inicio del panel. Próximo micro-paso: KPIs y “Clientes recientes”.
       </p>
+      {/* trigger redeploy */}
     </div>
   );
 }
