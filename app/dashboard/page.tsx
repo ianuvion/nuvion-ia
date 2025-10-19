@@ -1,5 +1,8 @@
-// app/dashboard/page.tsx
+'use client';
 
+import { useState } from 'react';
+
+/** ====== Datos simulados ====== */
 type KPI = { label: string; value: string };
 type Cliente = { name: string; status: "Onboarding" | "Activo" | "Prueba"; notes: string };
 
@@ -16,6 +19,10 @@ const CLIENTES: Cliente[] = [
   { name: "Lava Autos Venecia",  status: "Prueba",     notes: "A/B script de ventas" },
 ];
 
+/** REEMPLAZÁ este link por el de tu PDF fijo del Formulario */
+const FORM_URL = "#";
+
+/** ====== UI helpers simples ====== */
 function Card(props: React.PropsWithChildren<{ className?: string }>) {
   return (
     <div className={`rounded-2xl shadow-sm border border-gray-200 bg-white p-5 ${props.className ?? ""}`}>
@@ -23,16 +30,55 @@ function Card(props: React.PropsWithChildren<{ className?: string }>) {
     </div>
   );
 }
+function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement> & {variant?: 'primary' | 'ghost'}) {
+  const { className = "", variant = 'ghost', ...rest } = props;
+  const base = "rounded-xl px-4 py-2 border transition text-sm";
+  const styles = variant === 'primary'
+    ? "bg-black text-white border-black hover:opacity-90"
+    : "border-gray-300 hover:border-gray-400 hover:bg-gray-50";
+  return <button className={`${base} ${styles} ${className}`} {...rest} />;
+}
 
+/** ====== Página ====== */
 export default function DashboardHome() {
+  const [todo, setTodo] = useState([
+    { id: 1, text: "Crear carpeta del cliente en Drive", done: false },
+    { id: 2, text: "Enviar Formulario de Inicio",        done: false },
+    { id: 3, text: "Conectar canales (WA/IG/FB)",        done: false },
+    { id: 4, text: "Desplegar agente y test",            done: false },
+    { id: 5, text: "Activar cobro mensual",              done: false },
+  ]);
+
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [invite, setInvite] = useState({ name: "", email: "" });
+
+  const toggleItem = (id: number) =>
+    setTodo(t => t.map(i => i.id === id ? { ...i, done: !i.done } : i));
+
+  const submitInvite = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulación: acá después vamos a integrar con tu backend o Zapier
+    alert(`Invitación enviada a ${invite.name} <${invite.email}>`);
+    setInvite({ name: "", email: "" });
+    setInviteOpen(false);
+  };
+
   return (
     <div className="flex flex-col gap-6">
-      {/* Encabezado */}
+      {/* Encabezado + acciones */}
       <Card>
-        <h1 className="text-2xl font-semibold tracking-tight">Bienvenido, Ariel 👋</h1>
-        <p className="text-gray-600 mt-1 text-sm">
-          Vista rápida del negocio. Próximo micro-paso: checklist + botones de acción.
-        </p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">Bienvenido, Ariel 👋</h1>
+            <p className="text-gray-600 mt-1 text-sm">
+              Vista rápida del negocio. Próximo paso: integrar acciones reales.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={() => setInviteOpen(true)}>Invitar cliente</Button>
+            <Button variant="primary">Crear agente IA</Button>
+          </div>
+        </div>
       </Card>
 
       {/* KPIs */}
@@ -72,19 +118,69 @@ export default function DashboardHome() {
 
         <Card>
           <h3 className="font-medium mb-3">Checklist de lanzamiento</h3>
-          <ol className="list-decimal ml-5 space-y-2 text-sm">
-            <li>Crear carpeta del cliente en Drive</li>
-            <li>Enviar <span className="font-medium">Formulario de Inicio</span></li>
-            <li>Conectar canales (WA/IG/FB)</li>
-            <li>Desplegar agente y test</li>
-            <li>Activar cobro mensual</li>
-          </ol>
-
-          <a href="#" className="mt-4 block text-center rounded-xl border border-black bg-black text-white py-2 hover:opacity-90">
+          <ul className="space-y-2">
+            {todo.map(item => (
+              <li key={item.id} className="flex items-start gap-2">
+                <input
+                  id={`t-${item.id}`}
+                  type="checkbox"
+                  checked={item.done}
+                  onChange={() => toggleItem(item.id)}
+                  className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                />
+                <label htmlFor={`t-${item.id}`} className={`text-sm ${item.done ? "line-through text-gray-400" : ""}`}>
+                  {item.text}
+                </label>
+              </li>
+            ))}
+          </ul>
+          <a
+            href={FORM_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-4 block text-center rounded-xl border border-black bg-black text-white py-2 hover:opacity-90"
+          >
             Abrir Formulario
           </a>
         </Card>
       </div>
+
+      {/* Modal Invitar cliente (simple) */}
+      {inviteOpen && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-lg">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold">Invitar cliente</h3>
+              <button onClick={() => setInviteOpen(false)} className="text-sm text-gray-500 hover:text-gray-700">Cerrar</button>
+            </div>
+            <form onSubmit={submitInvite} className="space-y-3">
+              <div>
+                <label className="text-sm text-gray-600">Nombre</label>
+                <input
+                  className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
+                  value={invite.name}
+                  onChange={e => setInvite(prev => ({ ...prev, name: e.target.value }))}
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-sm text-gray-600">Email</label>
+                <input
+                  type="email"
+                  className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
+                  value={invite.email}
+                  onChange={e => setInvite(prev => ({ ...prev, email: e.target.value }))}
+                  required
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-1">
+                <Button type="button" onClick={() => setInviteOpen(false)}>Cancelar</Button>
+                <Button type="submit" variant="primary">Enviar invitación</Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
