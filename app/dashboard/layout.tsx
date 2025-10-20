@@ -1,12 +1,21 @@
-import React from "react";
 import Link from "next/link";
-import Image from "next/image";
-import "../globals.css";
 
-export const metadata = {
-  title: "Dashboard | Nuvion IA",
-  description: "Panel de control — Nuvion IA",
-};
+function NavLink({
+  href,
+  label,
+}: {
+  href: string;
+  label: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition"
+    >
+      {label}
+    </Link>
+  );
+}
 
 export default function DashboardLayout({
   children,
@@ -14,35 +23,45 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
-      <body className="bg-gray-50 text-gray-900">
-        {/* Barra superior */}
-        <header className="flex items-center justify-between px-6 py-3 bg-white shadow-md">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-slate-100">
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-900/70 backdrop-blur">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+          {/* Brand + Nav */}
           <div className="flex items-center gap-3">
-            {/* LOGO NUVION */}
-            <Link href="/">
-              <Image
+            <Link href="/" className="flex items-center gap-2">
+              <img
                 src="/icon.png"
                 alt="Nuvion IA"
-                width={36}
-                height={36}
-                className="rounded-xl"
+                className="h-7 w-7 rounded-md"
               />
+              <span className="font-semibold tracking-tight">Nuvion IA</span>
             </Link>
-            <h1 className="text-lg font-semibold text-[#0A2342]">Nuvion IA</h1>
+
+            <nav className="hidden md:flex items-center gap-1 ml-6">
+              <NavLink href="/dashboard" label="Inicio" />
+              <NavLink href="/clientes" label="Clientes" />
+              <NavLink href="/reportes" label="Reportes" />
+              <NavLink href="/configuracion" label="Configuración" />
+            </nav>
           </div>
 
-          {/* Botón ejemplo lado derecho */}
-          <div>
-            <button className="bg-[#0A2342] text-white px-4 py-1.5 rounded-xl hover:bg-[#133b70] transition">
+          {/* Actions (derecha) */}
+          <div className="flex items-center gap-2">
+            <Link
+              href="/logout"
+              className="inline-flex items-center gap-2 rounded-md border border-white/10 px-3 py-1.5 text-sm hover:bg-white/10 transition"
+            >
               Cerrar sesión
-            </button>
+            </Link>
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Contenido principal */}
-        <main className="p-6">{children}</main>
-      </body>
-    </html>
+      {/* Contenido principal */}
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+        {children}
+      </main>
+    </div>
   );
 }
