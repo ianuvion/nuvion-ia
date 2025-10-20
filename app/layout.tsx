@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Nuvion IA — Plataforma",
+  title: "Nuvion IA",
   description: "Automatización y ventas asistidas por IA.",
   icons: {
     icon: "/icon.png",
