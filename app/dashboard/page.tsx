@@ -1,114 +1,123 @@
-'use client';
-
-import Link from "next/link";
-import { useMemo, useState } from "react";
-
-type Cliente = {
-  name: string;
-  status: "Onboarding" | "Activo" | "Prueba";
-  notes: string;
+// app/dashboard/page.tsx
+type Lead = {
+  id: string;
+  nombre: string;
+  canal: "WhatsApp" | "Instagram" | "Facebook" | "Web";
+  estado: "Nuevo" | "En curso" | "Ganado" | "Perdido";
+  fecha: string; // ISO o legible
 };
 
-const CLIENTES: Cliente[] = [
-  { name: "RC Plenitud Seguros", status: "Onboarding", notes: "Conectar WhatsApp API oficial" },
-  { name: "Power Techo", status: "Activo", notes: "Optimizar flujo de seguimiento" },
-  { name: "Lava Autos Venecia", status: "Prueba", notes: "A/B de script de ventas" },
-  { name: "La Fonda de Don Luis", status: "Activo", notes: "Embudo de reservas" },
-  { name: "NovaFit", status: "Onboarding", notes: "Definir tono del agente" },
+const kpis = [
+  { label: "Leads del día", value: 18 },
+  { label: "En curso", value: 42 },
+  { label: "Ganados (30d)", value: 27 },
+  { label: "Tasa de respuesta", value: "92%" },
 ];
 
-const slugify = (name: string) =>
-  name
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w-]/g, "")
-    .replace(/-+/g, "-");
+const leads: Lead[] = [
+  { id: "LD-001", nombre: "María López", canal: "WhatsApp", estado: "Nuevo", fecha: "2025-10-20 10:22" },
+  { id: "LD-002", nombre: "Juan Pérez", canal: "Instagram", estado: "En curso", fecha: "2025-10-20 09:50" },
+  { id: "LD-003", nombre: "RC Plenitud", canal: "Facebook", estado: "Ganado", fecha: "2025-10-19 18:05" },
+  { id: "LD-004", nombre: "Power Techo", canal: "Web", estado: "En curso", fecha: "2025-10-19 16:21" },
+  { id: "LD-005", nombre: "Ana Suárez", canal: "WhatsApp", estado: "Perdido", fecha: "2025-10-19 12:09" },
+];
 
-export default function DashboardHome() {
-  const [query, setQuery] = useState("");
-
-  const filtered = useMemo(() => {
-    const q = query.toLowerCase();
-    return CLIENTES.filter((c) =>
-      (c.name + " " + c.notes).toLowerCase().includes(q)
-    );
-  }, [query]);
-
-  const total = CLIENTES.length;
-  const activos = CLIENTES.filter((c) => c.status === "Activo").length;
-  const onboarding = CLIENTES.filter((c) => c.status === "Onboarding").length;
-  const prueba = CLIENTES.filter((c) => c.status === "Prueba").length;
-
+export default function DashboardPage() {
   return (
     <div className="space-y-8">
-      {/* Encabezado */}
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold">Bienvenido, Ariel 👋</h1>
-        <p className="text-sm text-gray-600">
-          Resumen rápido de tu operación.
-        </p>
-      </header>
+      {/* Encabezado de la vista */}
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Resumen</h1>
+        <p className="text-sm text-gray-500">Estado general de Nuvion IA</p>
+      </div>
 
       {/* KPIs */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard label="Clientes" value={total} />
-        <KPICard label="Activos" value={activos} />
-        <KPICard label="Onboarding" value={onboarding} />
-        <KPICard label="En prueba" value={prueba} />
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {kpis.map((kpi) => (
+          <div key={kpi.label} className="rounded-xl border bg-white p-4 shadow-sm">
+            <div className="text-sm text-gray-500">{kpi.label}</div>
+            <div className="mt-2 text-2xl font-semibold">{kpi.value}</div>
+          </div>
+        ))}
       </section>
 
-      {/* Tabla de clientes recientes */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-medium">Clientes recientes</h2>
-          <Link
+      {/* Últimos leads */}
+      <section className="rounded-xl border bg-white">
+        <div className="flex items-center justify-between px-4 py-3 border-b">
+          <h2 className="font-medium">Últimos leads</h2>
+          <a
             href="/clientes"
-            className="text-sm text-gray-600 hover:text-gray-900"
+            className="text-sm rounded-lg border px-3 py-1.5 text-gray-700 hover:bg-gray-50"
           >
-            Ver todos →
-          </Link>
+            Ver todos
+          </a>
         </div>
 
-        <div className="rounded-2xl border bg-white overflow-hidden">
-          <div className="p-3 border-b">
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar por nombre o nota..."
-              className="w-full rounded-xl border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-300"
-            />
-          </div>
-
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600">
-              <tr>
-                <th className="text-left font-medium px-4 py-2">Cliente</th>
-                <th className="text-left font-medium px-4 py-2">Estado</th>
-                <th className="text-left font-medium px-4 py-2">Notas</th>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead className="bg-gray-50">
+              <tr className="text-left text-gray-600">
+                <th className="px-4 py-3 font-medium">ID</th>
+                <th className="px-4 py-3 font-medium">Nombre</th>
+                <th className="px-4 py-3 font-medium">Canal</th>
+                <th className="px-4 py-3 font-medium">Estado</th>
+                <th className="px-4 py-3 font-medium">Fecha</th>
+                <th className="px-4 py-3 font-medium"></th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map((c) => (
-                <tr key={c.name} className="border-t hover:bg-gray-50">
+              {leads.map((l, idx) => (
+                <tr key={l.id} className={idx % 2 ? "bg-white" : "bg-gray-50/50"}>
+                  <td className="px-4 py-3 font-mono text-xs text-gray-700">{l.id}</td>
+                  <td className="px-4 py-3">{l.nombre}</td>
                   <td className="px-4 py-3">
-                    <Link
-                      className="font-medium hover:underline"
-                      href={`/clientes/${slugify(c.name)}`}
-                    >
-                      {c.name}
-                    </Link>
+                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">
+                      {l.canal}
+                    </span>
                   </td>
                   <td className="px-4 py-3">
                     <span
-                      className={`rounded-full px-2.5 py-1 text-xs ${badgeColor(
-                        c.status
-                      )}`}
+                      className={
+                        "rounded-full px-2 py-0.5 text-xs " +
+                        (l.estado === "Nuevo"
+                          ? "bg-blue-50 text-blue-700"
+                          : l.estado === "En curso"
+                          ? "bg-amber-50 text-amber-700"
+                          : l.estado === "Ganado"
+                          ? "bg-emerald-50 text-emerald-700"
+                          : "bg-rose-50 text-rose-700")
+                      }
                     >
-                      {c.status}
+                      {l.estado}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-gray-600">{c.notes}</td>
+                  <td className="px-4 py-3 text-gray-600">{l.fecha}</td>
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex justify-end gap-2">
+                      <a
+                        href="#"
+                        className="rounded-lg border px-2.5 py-1 text-xs text-gray-700 hover:bg-gray-50"
+                        title="Abrir conversación (placeholder)"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          alert(Abrir conversación de ${l.nombre} (demo));
+                        }}
+                      >
+                        Abrir
+                      </a>
+                      <a
+                        href="#"
+                        className="rounded-lg border px-2.5 py-1 text-xs text-gray-700 hover:bg-gray-50"
+                        title="Marcar como ganado (placeholder)"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          alert(Marcar lead ${l.id} como Ganado (demo));
+                        }}
+                      >
+                        Ganado
+                      </a>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -118,26 +127,3 @@ export default function DashboardHome() {
     </div>
   );
 }
-
-function KPICard({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-2xl border bg-white px-4 py-4">
-      <div className="text-sm text-gray-500">{label}</div>
-      <div className="mt-1 text-2xl font-semibold">{value}</div>
-    </div>
-  );
-}
-
-function badgeColor(status: Cliente["status"]) {
-  switch (status) {
-    case "Activo":
-      return "bg-green-100 text-green-700";
-    case "Onboarding":
-      return "bg-amber-100 text-amber-700";
-    case "Prueba":
-      return "bg-blue-100 text-blue-700";
-    default:
-      return "bg-gray-100 text-gray-700";
-  }
-}
-
