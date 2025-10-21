@@ -27,12 +27,19 @@ const recentClients = [
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    Activo: "bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-400/30",
-    Onboarding: "bg-amber-500/15 text-amber-200 ring-1 ring-amber-400/30",
-    Prueba: "bg-sky-500/15 text-sky-200 ring-1 ring-sky-400/30",
+    Activo:
+      "bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-400/30 shadow-[0_0_6px_rgba(16,185,129,0.15)]",
+    Onboarding:
+      "bg-amber-500/15 text-amber-200 ring-1 ring-amber-400/30 shadow-[0_0_6px_rgba(245,158,11,0.15)]",
+    Prueba:
+      "bg-sky-500/15 text-sky-200 ring-1 ring-sky-400/30 shadow-[0_0_6px_rgba(56,189,248,0.15)]",
   };
   return (
-    <span className={`px-2 py-0.5 text-xs rounded-full ${styles[status] ?? "bg-slate-400/10 text-slate-200 ring-1 ring-slate-500/30"}`}>
+    <span
+      className={`px-2 py-0.5 text-xs rounded-full ${
+        styles[status] ?? "bg-slate-400/10 text-slate-200 ring-1 ring-slate-500/30"
+      }`}
+    >
       {status}
     </span>
   );
@@ -47,17 +54,20 @@ export default function DashboardPage() {
           {kpis.map((k) => (
             <div
               key={k.label}
-              className="rounded-2xl border border-slate-500/40 bg-slate-700/50 p-4 shadow-sm"
+              className="rounded-2xl border border-slate-500/50 bg-slate-700/50 p-4 shadow-sm"
             >
-              <p className="text-xs md:text-sm text-slate-200">{k.label}</p>
-              <p className="mt-1 text-2xl md:text-3xl font-semibold tracking-tight">{k.value}</p>
+              <p className="text-xs md:text-sm text-slate-100">{k.label}</p>
+              <p className="mt-1 text-2xl md:text-3xl font-semibold tracking-tight">
+                {k.value}
+              </p>
             </div>
           ))}
         </section>
 
+        {/* Secciones principales */}
         <section className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Embudo */}
-          <div className="rounded-2xl border border-slate-500/40 bg-slate-700/50">
+          <div className="rounded-2xl border border-slate-500/50 bg-slate-700/50">
             <div className="px-5 pt-4 pb-2 border-b border-slate-500/30">
               <h2 className="text-sm font-medium text-slate-50">Embudo de ventas</h2>
             </div>
@@ -72,8 +82,20 @@ export default function DashboardPage() {
                       color: "rgb(241,245,249)",
                     }}
                   />
-                  <Funnel dataKey="value" data={funnelData} isAnimationActive fill="#bfdbfe" stroke="#2563eb">
-                    <LabelList position="inside" fill="#0b1220" stroke="none" dataKey="value" />
+                  <Funnel
+                    dataKey="value"
+                    data={funnelData}
+                    isAnimationActive
+                    fill="#bfdbfe"
+                    stroke="rgba(148,163,184,0.5)"
+                    strokeWidth={1}
+                  >
+                    <LabelList
+                      position="inside"
+                      fill="#0b1220"
+                      stroke="none"
+                      dataKey="value"
+                    />
                   </Funnel>
                 </FunnelChart>
               </ResponsiveContainer>
@@ -81,7 +103,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Clientes recientes */}
-          <div className="rounded-2xl border border-slate-500/40 bg-slate-700/50">
+          <div className="rounded-2xl border border-slate-500/50 bg-slate-700/50">
             <div className="px-5 pt-4 pb-2 border-b border-slate-500/30 flex items-center justify-between">
               <h2 className="text-sm font-medium text-slate-50">Clientes recientes</h2>
               <Link
@@ -105,9 +127,11 @@ export default function DashboardPage() {
                   <tbody className="divide-y divide-slate-500/30">
                     {recentClients.map((c) => (
                       <tr key={c.name} className="hover:bg-slate-600/30">
-                        <td className="py-3 pr-3">{c.name}</td>
-                        <td className="py-3 pr-3"><StatusBadge status={c.status} /></td>
-                        <td className="py-3 text-slate-50">{c.note}</td>
+                        <td className="py-3 pr-3 text-slate-100">{c.name}</td>
+                        <td className="py-3 pr-3">
+                          <StatusBadge status={c.status} />
+                        </td>
+                        <td className="py-3 text-slate-100">{c.note}</td>
                       </tr>
                     ))}
                   </tbody>
