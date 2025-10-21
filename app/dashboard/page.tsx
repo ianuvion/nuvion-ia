@@ -55,7 +55,7 @@ export default function DashboardPage() {
           >
             {/* Si ya tenés un componente <Logo />, podés usarlo acá */}
             <img
-              src="/logo-nuvion-metal.png"
+              src="/icon.png"
               alt="Nuvion IA"
               className="h-6 w-auto"
             />
