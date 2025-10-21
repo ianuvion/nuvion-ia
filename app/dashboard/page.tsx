@@ -9,7 +9,7 @@ const kpis = [
   { label: "Clientes", value: 5 },
   { label: "Activos", value: 2 },
   { label: "Onboarding", value: 2 },
-  { label: "En Prueba", value: 1 }, // ← mayúscula inicial
+  { label: "En Prueba", value: 1 },
 ];
 
 const funnelData = [
@@ -29,14 +29,12 @@ const recentClients = [
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    Activo: "bg-emerald-400/10 text-emerald-300 ring-1 ring-emerald-500/30",
-    Onboarding: "bg-amber-400/10 text-amber-300 ring-1 ring-amber-500/30",
-    Prueba: "bg-sky-400/10 text-sky-300 ring-1 ring-sky-500/30",
+    Activo: "bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-400/30",
+    Onboarding: "bg-amber-500/15 text-amber-200 ring-1 ring-amber-400/30",
+    Prueba: "bg-sky-500/15 text-sky-200 ring-1 ring-sky-400/30",
   };
   return (
-    <span
-      className={`px-2 py-0.5 text-xs rounded-full ${styles[status] ?? "bg-slate-400/10 text-slate-300 ring-1 ring-slate-600/30"}`}
-    >
+    <span className={`px-2 py-0.5 text-xs rounded-full ${styles[status] ?? "bg-slate-400/10 text-slate-200 ring-1 ring-slate-500/30"}`}>
       {status}
     </span>
   );
@@ -44,25 +42,20 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-950 to-slate-900 text-slate-100">
-      {/* Header compacto con logo clickeable */}
-      <header className="sticky top-0 z-40 border-b border-slate-800/60 bg-slate-950/70 backdrop-blur supports-[backdrop-filter]:bg-slate-950/50">
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-slate-100">
+      {/* Header: un solo menú + logo con brillo suave */}
+      <header className="sticky top-0 z-40 border-b border-slate-700/40 bg-slate-900/70 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-2 hover:opacity-90 transition"
-            aria-label="Ir al inicio"
-          >
-            {/* Si ya tenés un componente <Logo />, podés usarlo acá */}
+          <Link href="/" className="flex items-center gap-2 hover:opacity-95 transition" aria-label="Ir al inicio">
             <img
               src="/icon.png"
               alt="Nuvion IA"
-              className="h-6 w-auto"
+              className="h-7 w-auto drop-shadow-[0_0_8px_rgba(255,255,255,0.25)] brightness-110"
             />
-            <span className="sr-only">Inicio</span>
+            <span className="text-base font-semibold tracking-tight">Nuvion IA</span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6 text-sm text-slate-300">
+          <nav className="hidden md:flex items-center gap-6 text-sm text-slate-200/90">
             <Link href="/dashboard" className="hover:text-white">Inicio</Link>
             <Link href="/clientes" className="hover:text-white">Clientes</Link>
             <Link href="/reportes" className="hover:text-white">Reportes</Link>
@@ -72,7 +65,7 @@ export default function DashboardPage() {
 
           <Link
             href="/api/auth/signout"
-            className="rounded-xl border border-slate-700/60 bg-slate-900/50 px-3 py-1.5 text-sm text-slate-200 hover:bg-slate-800/60"
+            className="rounded-xl border border-slate-600/60 bg-slate-800/60 px-3 py-1.5 text-sm text-slate-100 hover:bg-slate-700/70"
           >
             Cerrar sesión
           </Link>
@@ -80,63 +73,57 @@ export default function DashboardPage() {
       </header>
 
       <main className="mx-auto max-w-7xl px-4">
-        {/* KPIs — sin fondos blancos */}
-        <section className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 pt-6">
+        {/* KPIs con superficie más clara */}
+        <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
           {kpis.map((k) => (
             <div
               key={k.label}
-              className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)]"
+              className="rounded-2xl border border-slate-600/40 bg-slate-800/50 p-4 shadow-sm"
             >
-              <p className="text-xs md:text-sm text-slate-400">{k.label}</p>
+              <p className="text-xs md:text-sm text-slate-300">{k.label}</p>
               <p className="mt-1 text-2xl md:text-3xl font-semibold tracking-tight">{k.value}</p>
             </div>
           ))}
         </section>
 
-        {/* Embudo + Tabla — menos espacio vertical */}
         <section className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Card Embudo */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60">
-            <div className="px-5 pt-4 pb-2 border-b border-slate-800/80">
-              <h2 className="text-sm font-medium text-slate-200">Embudo de ventas</h2>
+          {/* Embudo más legible */}
+          <div className="rounded-2xl border border-slate-600/40 bg-slate-800/50">
+            <div className="px-5 pt-4 pb-2 border-b border-slate-600/30">
+              <h2 className="text-sm font-medium text-slate-100">Embudo de ventas</h2>
             </div>
             <div className="h-[320px] p-4">
               <ResponsiveContainer width="100%" height="100%">
                 <FunnelChart>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#0f172a",
-                      border: "1px solid #1e293b",
+                      backgroundColor: "rgb(30,41,59)", // slate-700
+                      border: "1px solid rgba(148,163,184,0.25)",
                       borderRadius: "12px",
-                      color: "#e2e8f0",
+                      color: "rgb(241,245,249)",
                     }}
                   />
                   <Funnel
                     dataKey="value"
                     data={funnelData}
                     isAnimationActive
-                    fill="#60a5fa"
-                    stroke="#1d4ed8"
+                    fill="#93c5fd"   // un tono más claro que antes
+                    stroke="#2563eb"
                   >
-                    <LabelList
-                      position="inside"
-                      fill="#0b1220"
-                      stroke="none"
-                      dataKey="value"
-                    />
+                    <LabelList position="inside" fill="#0b1220" stroke="none" dataKey="value" />
                   </Funnel>
                 </FunnelChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          {/* Card Clientes Recientes */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60">
-            <div className="px-5 pt-4 pb-2 border-b border-slate-800/80 flex items-center justify-between">
-              <h2 className="text-sm font-medium text-slate-200">Clientes recientes</h2>
+          {/* Tabla clientes con contraste mejorado */}
+          <div className="rounded-2xl border border-slate-600/40 bg-slate-800/50">
+            <div className="px-5 pt-4 pb-2 border-b border-slate-600/30 flex items-center justify-between">
+              <h2 className="text-sm font-medium text-slate-100">Clientes recientes</h2>
               <Link
                 href="/clientes"
-                className="text-xs md:text-sm inline-flex items-center gap-1 rounded-lg border border-slate-700/60 bg-slate-800/50 px-2.5 py-1.5 text-slate-200 hover:bg-slate-700/60 hover:shadow transition"
+                className="text-xs md:text-sm inline-flex items-center gap-1 rounded-lg border border-slate-500/60 bg-slate-700/40 px-2.5 py-1.5 text-slate-100 hover:bg-slate-700/60 hover:shadow transition"
               >
                 Ver todos <span aria-hidden>→</span>
               </Link>
@@ -146,20 +133,20 @@ export default function DashboardPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-left text-xs text-slate-400">
+                    <tr className="text-left text-xs text-slate-300">
                       <th className="py-2 font-normal">Cliente</th>
                       <th className="py-2 font-normal">Estado</th>
                       <th className="py-2 font-normal">Notas</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/80">
+                  <tbody className="divide-y divide-slate-600/30">
                     {recentClients.map((c) => (
-                      <tr key={c.name} className="hover:bg-slate-800/40">
+                      <tr key={c.name} className="hover:bg-slate-700/30">
                         <td className="py-3 pr-3">{c.name}</td>
                         <td className="py-3 pr-3">
                           <StatusBadge status={c.status} />
                         </td>
-                        <td className="py-3">{c.note}</td>
+                        <td className="py-3 text-slate-200/95">{c.note}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -169,7 +156,6 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* Footer compacto */}
         <div className="h-10" />
       </main>
     </div>
