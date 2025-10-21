@@ -1,10 +1,7 @@
-import SalesFunnel from './components/SalesFunnel';
-
-type Cliente = {
-  name: string;
-  status: 'Onboarding' | 'Activo' | 'Prueba';
-  notes: string;
-};
+import dynamic from 'next/dynamic';
+const SalesFunnel = dynamic(() => import('./components/SalesFunnel'), {
+  ssr: false,
+});
 
 const CLIENTES: Cliente[] = [
   { name: 'RC Plenitud Seguros', status: 'Onboarding', notes: 'Conectar WhatsApp API oficial' },
