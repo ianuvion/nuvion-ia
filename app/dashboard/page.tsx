@@ -42,62 +42,39 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-slate-100">
-      {/* Header: un solo menú + logo con brillo suave */}
-      <header className="sticky top-0 z-40 border-b border-slate-700/40 bg-slate-900/70 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-95 transition" aria-label="Ir al inicio">
-            <img
-              src="/icon.png"
-              alt="Nuvion IA"
-              className="h-7 w-auto drop-shadow-[0_0_8px_rgba(255,255,255,0.25)] brightness-110"
-            />
-            <span className="text-base font-semibold tracking-tight">Nuvion IA</span>
-          </Link>
-
-          <nav className="hidden md:flex items-center gap-6 text-sm text-slate-200/90">
-            <Link href="/dashboard" className="hover:text-white">Inicio</Link>
-            <Link href="/clientes" className="hover:text-white">Clientes</Link>
-            <Link href="/reportes" className="hover:text-white">Reportes</Link>
-            <Link href="/configuracion" className="hover:text-white">Configuración</Link>
-            <Link href="/contacto" className="hover:text-white">Contacto</Link>
-          </nav>
-
-          <Link
-            href="/api/auth/signout"
-            className="rounded-xl border border-slate-600/60 bg-slate-800/60 px-3 py-1.5 text-sm text-slate-100 hover:bg-slate-700/70"
-          >
-            Cerrar sesión
-          </Link>
-        </div>
-      </header>
+    // Fondo un poco más claro que antes
+    <div className="min-h-screen bg-gradient-to-b from-slate-800 via-slate-800 to-slate-700 text-slate-100">
+      {/* --- SIN HEADER LOCAL (usamos el del layout) --- */}
 
       <main className="mx-auto max-w-7xl px-4">
-        {/* KPIs con superficie más clara */}
-        <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
+        {/* Etiqueta mínima para verificar versión visual */}
+        <p className="pt-4 text-[11px] text-slate-300/70">Tema: Dark Suave v2</p>
+
+        {/* KPIs */}
+        <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
           {kpis.map((k) => (
             <div
               key={k.label}
-              className="rounded-2xl border border-slate-600/40 bg-slate-800/50 p-4 shadow-sm"
+              className="rounded-2xl border border-slate-500/40 bg-slate-700/50 p-4 shadow-sm"
             >
-              <p className="text-xs md:text-sm text-slate-300">{k.label}</p>
+              <p className="text-xs md:text-sm text-slate-200">{k.label}</p>
               <p className="mt-1 text-2xl md:text-3xl font-semibold tracking-tight">{k.value}</p>
             </div>
           ))}
         </section>
 
         <section className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Embudo más legible */}
-          <div className="rounded-2xl border border-slate-600/40 bg-slate-800/50">
-            <div className="px-5 pt-4 pb-2 border-b border-slate-600/30">
-              <h2 className="text-sm font-medium text-slate-100">Embudo de ventas</h2>
+          {/* Embudo */}
+          <div className="rounded-2xl border border-slate-500/40 bg-slate-700/50">
+            <div className="px-5 pt-4 pb-2 border-b border-slate-500/30">
+              <h2 className="text-sm font-medium text-slate-50">Embudo de ventas</h2>
             </div>
             <div className="h-[320px] p-4">
               <ResponsiveContainer width="100%" height="100%">
                 <FunnelChart>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "rgb(30,41,59)", // slate-700
+                      backgroundColor: "rgb(51,65,85)", // slate-700 aprox
                       border: "1px solid rgba(148,163,184,0.25)",
                       borderRadius: "12px",
                       color: "rgb(241,245,249)",
@@ -107,7 +84,7 @@ export default function DashboardPage() {
                     dataKey="value"
                     data={funnelData}
                     isAnimationActive
-                    fill="#93c5fd"   // un tono más claro que antes
+                    fill="#bfdbfe"   // más claro
                     stroke="#2563eb"
                   >
                     <LabelList position="inside" fill="#0b1220" stroke="none" dataKey="value" />
@@ -117,13 +94,13 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Tabla clientes con contraste mejorado */}
-          <div className="rounded-2xl border border-slate-600/40 bg-slate-800/50">
-            <div className="px-5 pt-4 pb-2 border-b border-slate-600/30 flex items-center justify-between">
-              <h2 className="text-sm font-medium text-slate-100">Clientes recientes</h2>
+          {/* Clientes recientes */}
+          <div className="rounded-2xl border border-slate-500/40 bg-slate-700/50">
+            <div className="px-5 pt-4 pb-2 border-b border-slate-500/30 flex items-center justify-between">
+              <h2 className="text-sm font-medium text-slate-50">Clientes recientes</h2>
               <Link
                 href="/clientes"
-                className="text-xs md:text-sm inline-flex items-center gap-1 rounded-lg border border-slate-500/60 bg-slate-700/40 px-2.5 py-1.5 text-slate-100 hover:bg-slate-700/60 hover:shadow transition"
+                className="text-xs md:text-sm inline-flex items-center gap-1 rounded-lg border border-slate-400/60 bg-slate-600/40 px-2.5 py-1.5 text-slate-50 hover:bg-slate-600/60 hover:shadow transition"
               >
                 Ver todos <span aria-hidden>→</span>
               </Link>
@@ -133,20 +110,20 @@ export default function DashboardPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-left text-xs text-slate-300">
+                    <tr className="text-left text-xs text-slate-200">
                       <th className="py-2 font-normal">Cliente</th>
                       <th className="py-2 font-normal">Estado</th>
                       <th className="py-2 font-normal">Notas</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-600/30">
+                  <tbody className="divide-y divide-slate-500/30">
                     {recentClients.map((c) => (
-                      <tr key={c.name} className="hover:bg-slate-700/30">
+                      <tr key={c.name} className="hover:bg-slate-600/30">
                         <td className="py-3 pr-3">{c.name}</td>
                         <td className="py-3 pr-3">
                           <StatusBadge status={c.status} />
                         </td>
-                        <td className="py-3 text-slate-200/95">{c.note}</td>
+                        <td className="py-3 text-slate-50">{c.note}</td>
                       </tr>
                     ))}
                   </tbody>
