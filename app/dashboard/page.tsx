@@ -1,12 +1,11 @@
 "use client";
 
-// app/dashboard/page.tsx
 type Lead = {
   id: string;
   nombre: string;
   canal: "WhatsApp" | "Instagram" | "Facebook" | "Web";
   estado: "Nuevo" | "En curso" | "Ganado" | "Perdido";
-  fecha: string; // ISO o legible
+  fecha: string;
 };
 
 const kpis = [
@@ -27,13 +26,11 @@ const leads: Lead[] = [
 export default function DashboardPage() {
   return (
     <div className="space-y-8">
-      {/* Encabezado de la vista */}
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Resumen</h1>
         <p className="text-sm text-gray-500">Estado general de Nuvion IA</p>
       </div>
 
-      {/* KPIs */}
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map((kpi) => (
           <div key={kpi.label} className="rounded-xl border bg-white p-4 shadow-sm">
@@ -43,7 +40,6 @@ export default function DashboardPage() {
         ))}
       </section>
 
-      {/* Últimos leads */}
       <section className="rounded-xl border bg-white">
         <div className="flex items-center justify-between px-4 py-3 border-b">
           <h2 className="font-medium">Últimos leads</h2>
@@ -99,7 +95,6 @@ export default function DashboardPage() {
                       <a
                         href="#"
                         className="rounded-lg border px-2.5 py-1 text-xs text-gray-700 hover:bg-gray-50"
-                        title="Abrir conversación (placeholder)"
                         onClick={(e) => {
                           e.preventDefault();
                           alert(Abrir conversación de ${l.nombre} (demo));
@@ -110,7 +105,6 @@ export default function DashboardPage() {
                       <a
                         href="#"
                         className="rounded-lg border px-2.5 py-1 text-xs text-gray-700 hover:bg-gray-50"
-                        title="Marcar como ganado (placeholder)"
                         onClick={(e) => {
                           e.preventDefault();
                           alert(Marcar lead ${l.id} como Ganado (demo));
