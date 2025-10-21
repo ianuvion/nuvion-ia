@@ -1,3 +1,5 @@
+"use client";
+
 // app/dashboard/page.tsx
 type Lead = {
   id: string;
