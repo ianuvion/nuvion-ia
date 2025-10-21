@@ -30,7 +30,7 @@ export default function SalesFunnel() {
               <LabelList
                 position="right"
                 formatter={(value: number, entry: any) =>
-                  ${entry.name}: ${value}
+                  `${entry.name}: ${value}`
                 }
               />
             </Funnel>
