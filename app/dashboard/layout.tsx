@@ -43,6 +43,7 @@ export default function DashboardLayout({
               <NavLink href="/clientes" label="Clientes" />
               <NavLink href="/reportes" label="Reportes" />
               <NavLink href="/configuracion" label="Configuración" />
+              <NavLink href="/contacto" label="Contacto" />
             </nav>
           </div>
 
