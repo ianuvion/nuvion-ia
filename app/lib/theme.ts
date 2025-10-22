@@ -5,20 +5,17 @@ import { useEffect, useState } from "react";
 export type Theme = "dark" | "semidark" | "light";
 export const THEME_KEY = "nuvion_theme";
 
-/** Lee el tema guardado o devuelve 'semidark' por defecto */
 export function readSavedTheme(): Theme {
   if (typeof window === "undefined") return "semidark";
   const v = window.localStorage.getItem(THEME_KEY) as Theme | null;
   return v ?? "semidark";
 }
 
-/** Hook para suscribirse al tema */
 export function useTheme(): Theme {
   const [t, setT] = useState<Theme>("semidark");
   useEffect(() => {
     try {
       setT(readSavedTheme());
-      // opcional: reaccionar a cambios en otras pestañas
       const onStorage = (e: StorageEvent) => {
         if (e.key === THEME_KEY) setT(readSavedTheme());
       };
@@ -29,7 +26,6 @@ export function useTheme(): Theme {
   return t;
 }
 
-/** Devuelve clases base (fondo + color de texto) según el tema */
 export function bgClasses(theme: Theme): string {
   switch (theme) {
     case "light":
@@ -42,7 +38,6 @@ export function bgClasses(theme: Theme): string {
   }
 }
 
-/** Devuelve clases de tarjeta/borde según el tema */
 export function cardClasses(theme: Theme): string {
   switch (theme) {
     case "light":
@@ -55,7 +50,6 @@ export function cardClasses(theme: Theme): string {
   }
 }
 
-/** Gris para separadores/headers internos según tema */
 export function dividerBorder(theme: Theme): string {
   return theme === "light" ? "border-slate-300/40" : "border-slate-500/30";
 }
