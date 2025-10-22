@@ -19,7 +19,7 @@ function StatusBadge({ status }: { status: Client["status"] }) {
     Onboarding: "bg-amber-500/15 text-amber-100 ring-1 ring-amber-400/40 shadow-[0_0_6px_rgba(245,158,11,0.15)]",
     Prueba: "bg-sky-500/15 text-sky-100 ring-1 ring-sky-400/40 shadow-[0_0_6px_rgba(56,189,248,0.15)]",
   };
-  return <span className={px-2 py-0.5 text-xs rounded-full ${styles[status]}}>{status}</span>;
+  return <span className={`px-2 py-0.5 text-xs rounded-full ${styles[status]}`}>{status}</span>;
 }
 
 export default function ClientesPage() {
@@ -43,7 +43,7 @@ export default function ClientesPage() {
       : "border-slate-500/40 bg-slate-700/30 text-slate-100 placeholder:text-slate-300";
 
   return (
-    <div className={min-h-screen bg-gradient-to-b ${bgClasses(theme)} transition-colors}>
+    <div className={`min-h-screen bg-gradient-to-b ${bgClasses(theme)} transition-colors`}>
       <main className="mx-auto max-w-7xl px-4 py-6">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-xl font-semibold">Clientes</h1>
@@ -52,12 +52,12 @@ export default function ClientesPage() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Buscar por nombre o nota..."
-              className={w-64 rounded-lg border px-3 py-2 text-sm outline-none focus:border-slate-300 ${inputBase}}
+              className={`w-64 rounded-lg border px-3 py-2 text-sm outline-none focus:border-slate-300 ${inputBase}`}
             />
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as any)}
-              className={rounded-lg border px-3 py-2 text-sm outline-none ${inputBase}}
+              className={`rounded-lg border px-3 py-2 text-sm outline-none ${inputBase}`}
             >
               <option value="">Todos</option>
               <option value="Activo">Activo</option>
@@ -73,8 +73,8 @@ export default function ClientesPage() {
           </div>
         </div>
 
-        <div className={rounded-2xl border ${cardClasses(theme)}}>
-          <div className={px-5 pt-4 pb-2 border-b ${dividerBorder(theme)}}>
+        <div className={`rounded-2xl border ${cardClasses(theme)}`}>
+          <div className={`px-5 pt-4 pb-2 border-b ${dividerBorder(theme)}`}>
             <p className="text-sm font-medium">Listado</p>
           </div>
 
