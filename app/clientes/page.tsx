@@ -1,103 +1,117 @@
-// trigger build for clients page
-
-'use client';
+"use client";
 
 import { useMemo, useState } from "react";
 
-type Cliente = {
+type Client = {
   name: string;
-  status: "Onboarding" | "Activo" | "Prueba";
-  notes: string;
+  status: "Activo" | "Onboarding" | "Prueba";
+  note: string;
 };
 
-const CLIENTES: Cliente[] = [
-  { name: "RC Plenitud Seguros", status: "Onboarding", notes: "Conectar WhatsApp API oficial" },
-  { name: "Power Techo",         status: "Activo",     notes: "Optimizar flujo de seguimiento" },
-  { name: "Lava Autos Venecia",  status: "Prueba",     notes: "A/B de script de ventas" },
-  { name: "La Fonda de Don Luis",status: "Activo",     notes: "Embudo de reservas" },
-  { name: "NovaFit",             status: "Onboarding", notes: "Definir tono del agente" },
+const ALL_CLIENTS: Client[] = [
+  { name: "RC Plenitud Seguros", status: "Onboarding", note: "Conectar WhatsApp API oficial" },
+  { name: "Power Tech", status: "Activo", note: "Optimizar flujo de seguimiento" },
+  { name: "Lava Autos Venecia", status: "Prueba", note: "A/B de script de ventas" },
+  { name: "La Fonda de Don Luis", status: "Activo", note: "Embudo de reservas" },
+  { name: "NovaFit", status: "Onboarding", note: "Definir tono del agente" },
 ];
 
-function Badge({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="text-xs rounded-full border px-2 py-0.5 bg-gray-50 border-gray-200 text-gray-700">
-      {children}
-    </span>
-  );
+function StatusBadge({ status }: { status: Client["status"] }) {
+  const styles: Record<Client["status"], string> = {
+    Activo:
+      "bg-emerald-500/15 text-emerald-100 ring-1 ring-emerald-400/40 shadow-[0_0_6px_rgba(16,185,129,0.15)]",
+    Onboarding:
+      "bg-amber-500/15 text-amber-100 ring-1 ring-amber-400/40 shadow-[0_0_6px_rgba(245,158,11,0.15)]",
+    Prueba:
+      "bg-sky-500/15 text-sky-100 ring-1 ring-sky-400/40 shadow-[0_0_6px_rgba(56,189,248,0.15)]",
+  };
+  return <span className={`px-2 py-0.5 text-xs rounded-full ${styles[status]}`}>{status}</span>;
 }
 
 export default function ClientesPage() {
   const [q, setQ] = useState("");
-  const [status, setStatus] = useState<"" | Cliente["status"]>("");
+  const [status, setStatus] = useState<"" | Client["status"]>("");
 
-  const data = useMemo(() => {
-    return CLIENTES.filter((c) => {
-      const matchQ =
-        q.trim().length === 0 ||
+  const filtered = useMemo(() => {
+    return ALL_CLIENTS.filter((c) => {
+      const byText =
         c.name.toLowerCase().includes(q.toLowerCase()) ||
-        c.notes.toLowerCase().includes(q.toLowerCase());
-      const matchStatus = !status || c.status === status;
-      return matchQ && matchStatus;
+        c.note.toLowerCase().includes(q.toLowerCase());
+      const byStatus = status ? c.status === status : true;
+      return byText && byStatus;
     });
   }, [q, status]);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="rounded-2xl border border-gray-200 bg-white p-5">
-        <div className="flex flex-col sm:flex-row sm:items-end gap-3 justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Clientes</h1>
-            <p className="text-gray-600 mt-1 text-sm">Listado con filtro rápido.</p>
-          </div>
+    // SEMI-DARK más claro para que no se “apague” el contenido
+    <div className="min-h-screen bg-gradient-to-b from-slate-700 via-slate-700 to-slate-600 text-slate-50">
+      <main className="mx-auto max-w-7xl px-4 py-6">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-xl font-semibold">Clientes</h1>
           <div className="flex gap-2">
             <input
-              placeholder="Buscar por nombre o nota…"
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              className="w-full sm:w-72 rounded-xl border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
+              placeholder="Buscar por nombre o nota..."
+              className="w-64 rounded-lg border border-slate-400/40 bg-slate-600/30 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-200 outline-none focus:border-slate-300"
             />
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as any)}
-              className="rounded-xl border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-200"
+              className="rounded-lg border border-slate-400/40 bg-slate-600/30 px-3 py-2 text-sm text-slate-50 outline-none"
             >
               <option value="">Todos</option>
               <option value="Activo">Activo</option>
               <option value="Onboarding">Onboarding</option>
               <option value="Prueba">Prueba</option>
             </select>
+            <button
+              onClick={() => alert("Nuevo cliente (placeholder)")}
+              className="rounded-lg border border-slate-300/50 bg-slate-500/40 px-3 py-2 text-sm hover:bg-slate-500/60"
+            >
+              + Nuevo
+            </button>
           </div>
         </div>
-      </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-gray-600">
-            <tr>
-              <th className="text-left px-4 py-3">Cliente</th>
-              <th className="text-left px-4 py-3">Estado</th>
-              <th className="text-left px-4 py-3">Notas</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {data.map((c) => (
-              <tr key={c.name} className="hover:bg-gray-50">
-                <td className="px-4 py-3 font-medium">{c.name}</td>
-                <td className="px-4 py-3"><Badge>{c.status}</Badge></td>
-                <td className="px-4 py-3 text-gray-600">{c.notes}</td>
-              </tr>
-            ))}
-            {data.length === 0 && (
-              <tr>
-                <td className="px-4 py-6 text-center text-gray-500" colSpan={3}>
-                  No se encontraron clientes con esos filtros.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+        <div className="rounded-2xl border border-slate-400/50 bg-slate-600/40">
+          <div className="px-5 pt-4 pb-2 border-b border-slate-400/40">
+            <p className="text-sm font-medium">Listado</p>
+          </div>
+
+          <div className="p-4">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs text-slate-100/90">
+                    <th className="py-2 font-normal">Cliente</th>
+                    <th className="py-2 font-normal">Estado</th>
+                    <th className="py-2 font-normal">Notas</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-400/40">
+                  {filtered.map((c) => (
+                    <tr key={c.name} className="hover:bg-slate-500/30">
+                      <td className="py-3 pr-3">{c.name}</td>
+                      <td className="py-3 pr-3">
+                        <StatusBadge status={c.status} />
+                      </td>
+                      <td className="py-3">{c.note}</td>
+                    </tr>
+                  ))}
+                  {filtered.length === 0 && (
+                    <tr>
+                      <td colSpan={3} className="py-6 text-center text-slate-200">
+                        Sin resultados
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
-
