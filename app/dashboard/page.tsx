@@ -1,14 +1,36 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  ResponsiveContainer,
-  FunnelChart,
-  Funnel,
-  LabelList,
-  Tooltip,
-} from "recharts";
+import { ResponsiveContainer, FunnelChart, Funnel, LabelList, Tooltip } from "recharts";
+
+type Theme = "dark" | "semidark" | "light";
+const THEME_KEY = "nuvion_theme";
+
+function useTheme(): Theme {
+  const [t, setT] = useState<Theme>("semidark");
+  useEffect(() => {
+    try {
+      const saved = (localStorage.getItem(THEME_KEY) as Theme) || "semidark";
+      setT(saved);
+    } catch {}
+  }, []);
+  return t;
+}
+
+function bg(theme: Theme) {
+  if (theme === "light") return "from-slate-100 via-slate-100 to-white text-slate-900";
+  if (theme === "semidark") return "from-slate-700 via-slate-700 to-slate-600 text-slate-50";
+  return "from-slate-800 via-slate-800 to-slate-700 text-slate-100";
+}
+function card(theme: Theme) {
+  if (theme === "light") return "border-slate-300/60 bg-white/80";
+  if (theme === "semidark") return "border-slate-400/50 bg-slate-600/40";
+  return "border-slate-500/50 bg-slate-700/50";
+}
+function divider(theme: Theme) {
+  return theme === "light" ? "border-slate-300/40" : "border-slate-500/30";
+}
 
 type Row = { name: string; status: "Activo" | "Onboarding" | "Prueba"; note: string };
 
@@ -44,13 +66,15 @@ function Badge(props: { status: Row["status"] }) {
 }
 
 export default function DashboardPage() {
+  const theme = useTheme();
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-800 via-slate-800 to-slate-700 text-slate-100">
+    <div className={"min-h-screen bg-gradient-to-b " + bg(theme)}>
       <main className="mx-auto max-w-7xl px-4 py-4">
         {/* KPIs */}
         <section className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {KPIS.map((k) => (
-            <div key={k.label} className="rounded-2xl border border-slate-500/50 bg-slate-700/50 p-4 shadow-sm">
+            <div key={k.label} className={"rounded-2xl border p-4 shadow-sm " + card(theme)}>
               <p className="text-xs md:text-sm opacity-80">{k.label}</p>
               <p className="mt-1 text-2xl md:text-3xl font-semibold tracking-tight">{k.value}</p>
             </div>
@@ -59,9 +83,9 @@ export default function DashboardPage() {
 
         {/* Embudo + Clientes recientes */}
         <section className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Embudo real (Recharts) */}
-          <div className="rounded-2xl border border-slate-500/50 bg-slate-700/50">
-            <div className="px-5 pt-4 pb-2 border-b border-slate-500/30 flex items-center justify-between">
+          {/* Embudo */}
+          <div className={"rounded-2xl border " + card(theme)}>
+            <div className={"px-5 pt-4 pb-2 border-b " + divider(theme) + " flex items-center justify-between"}>
               <h2 className="text-sm font-medium">Embudo de ventas</h2>
               <span className="text-xs opacity-80">Datos demo</span>
             </div>
@@ -70,20 +94,13 @@ export default function DashboardPage() {
                 <FunnelChart>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#334155",
+                      backgroundColor: theme === "light" ? "#ffffff" : "#334155",
                       border: "1px solid rgba(148,163,184,0.25)",
                       borderRadius: 12,
-                      color: "#e5e7eb",
+                      color: theme === "light" ? "#0f172a" : "#e5e7eb",
                     }}
                   />
-                  <Funnel
-                    data={FUNNEL_DATA}
-                    dataKey="value"
-                    isAnimationActive
-                    fill="#93c5fd"
-                    stroke="rgba(148,163,184,0.5)"
-                    strokeWidth={1}
-                  >
+                  <Funnel data={FUNNEL_DATA} dataKey="value" isAnimationActive fill="#93c5fd" stroke="rgba(148,163,184,0.5)" strokeWidth={1}>
                     <LabelList dataKey="value" position="inside" fill="#0b1220" stroke="none" />
                   </Funnel>
                 </FunnelChart>
@@ -92,13 +109,10 @@ export default function DashboardPage() {
           </div>
 
           {/* Clientes recientes */}
-          <div className="rounded-2xl border border-slate-500/50 bg-slate-700/50">
-            <div className="px-5 pt-4 pb-2 border-b border-slate-500/30 flex items-center justify-between">
+          <div className={"rounded-2xl border " + card(theme)}>
+            <div className={"px-5 pt-4 pb-2 border-b " + divider(theme) + " flex items-center justify-between"}>
               <h2 className="text-sm font-medium">Clientes recientes</h2>
-              <Link
-                href="/clientes"
-                className="text-xs md:text-sm rounded-lg border border-slate-400/50 bg-slate-600/40 px-2.5 py-1.5 hover:bg-slate-600/60"
-              >
+              <Link href="/clientes" className="text-xs md:text-sm rounded-lg border border-slate-400/50 bg-slate-600/40 px-2.5 py-1.5 hover:bg-slate-600/60">
                 Ver todos →
               </Link>
             </div>
