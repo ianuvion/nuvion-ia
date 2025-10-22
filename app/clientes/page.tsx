@@ -15,9 +15,9 @@ const ALL_CLIENTS: Client[] = [
 
 function StatusBadge({ status }: { status: Client["status"] }) {
   const styles: Record<Client["status"], string> = {
-    Activo: "bg-emerald-500/15 text-emerald-100 ring-1 ring-emerald-400/40 shadow-[0_0_6px_rgba(16,185,129,0.15)]",
-    Onboarding: "bg-amber-500/15 text-amber-100 ring-1 ring-amber-400/40 shadow-[0_0_6px_rgba(245,158,11,0.15)]",
-    Prueba: "bg-sky-500/15 text-sky-100 ring-1 ring-sky-400/40 shadow-[0_0_6px_rgba(56,189,248,0.15)]",
+    Activo: "bg-emerald-500/15 text-emerald-100 ring-1 ring-emerald-400/40 shadow",
+    Onboarding: "bg-amber-500/15 text-amber-100 ring-1 ring-amber-400/40 shadow",
+    Prueba: "bg-sky-500/15 text-sky-100 ring-1 ring-sky-400/40 shadow",
   };
   return <span className={px-2 py-0.5 text-xs rounded-full ${styles[status]}}>{status}</span>;
 }
@@ -100,9 +100,7 @@ export default function ClientesPage() {
                   ))}
                   {filtered.length === 0 && (
                     <tr>
-                      <td colSpan={3} className="py-6 text-center opacity-75">
-                        Sin resultados
-                      </td>
+                      <td colSpan={3} className="py-6 text-center opacity-75">Sin resultados</td>
                     </tr>
                   )}
                 </tbody>
