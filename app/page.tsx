@@ -1,142 +1,50 @@
-// app/page.tsx
+"use client";
+
+import Image from "next/image";
 import Link from "next/link";
 
-export default function Page() {
+export default function Home() {
   return (
-    <main className="relative min-h-screen bg-gradient-to-b from-[#0b2340] to-[#081a2f] text-white">
-      {/* HERO */}
-      <section className="max-w-6xl mx-auto px-4 pt-24 pb-16">
-        <div className="grid md:grid-cols-2 gap-10 items-center">
-          <div>
-            <p className="text-sm/none tracking-widest uppercase text-sky-300/80 mb-4">
-              Plataforma conversacional para ventas
-            </p>
-            <h1 className="text-4xl sm:text-5xl font-bold leading-tight">
-              Nuvion <span className="text-sky-300">IA</span>
-            </h1>
-            <p className="mt-4 text-lg text-slate-200/90">
-              Impulsá tus ventas con <span className="font-semibold">IA conversacional</span>,
-              bandeja unificada y automatizaciones listas para usar.
-            </p>
+    <main className="min-h-screen bg-gradient-to-b from-slate-800 via-slate-800 to-slate-700 flex flex-col items-center justify-center text-center text-slate-100">
+      {/* Logo metálico */}
+      <Image
+        src="/icon.png"
+        alt="Nuvion IA"
+        width={160}
+        height={160}
+        className="mb-6 brightness-125 drop-shadow-[0_0_16px_rgba(255,255,255,0.2)] ring-2 ring-white/10 rounded-2xl"
+        priority
+      />
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center justify-center rounded-xl px-5 py-3 bg-sky-400 text-slate-900 font-semibold hover:bg-sky-300 transition"
-              >
-                Ir al panel
-              </Link>
+      {/* Nombre */}
+      <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+        Bienvenido a <span className="text-white">Nuvion IA</span>
+      </h1>
 
-              <Link
-                href="/clientes"
-                className="inline-flex items-center justify-center rounded-xl px-5 py-3 border border-slate-600/70 hover:border-slate-400 text-white transition"
-              >
-                Ver clientes
-              </Link>
+      {/* Subtexto */}
+      <p className="mt-3 text-slate-300 max-w-md">
+        Plataforma inteligente para automatizar tu negocio con tecnología IA.
+      </p>
 
-              <Link
-                href="/contacto"
-                className="inline-flex items-center justify-center rounded-xl px-5 py-3 border border-sky-500/60 text-sky-300 hover:bg-sky-900/30 transition"
-              >
-                Pedir demo
-              </Link>
-            </div>
+      {/* Botones de acceso rápido */}
+      <div className="mt-8 flex gap-4">
+        <Link
+          href="/dashboard"
+          className="rounded-lg border border-slate-500/40 bg-slate-700/50 px-4 py-2 text-sm hover:bg-slate-600/60 transition"
+        >
+          Ir al Dashboard
+        </Link>
+        <Link
+          href="/clientes"
+          className="rounded-lg border border-slate-500/40 bg-slate-700/50 px-4 py-2 text-sm hover:bg-slate-600/60 transition"
+        >
+          Ver Clientes
+        </Link>
+      </div>
 
-            {/* Mini “confianza” */}
-            <div className="mt-6 text-sm text-slate-300/80">
-              Integrado con WhatsApp Business, Instagram y Facebook.
-            </div>
-          </div>
-
-          {/* Lado derecho: tarjetas resumidas (ligeras) */}
-          <div className="grid gap-4">
-            <div className="rounded-2xl p-5 bg-white/5 backdrop-blur border border-white/10 shadow-lg">
-              <h3 className="font-semibold">Bandeja unificada</h3>
-              <p className="text-slate-300/90 mt-1">
-                Centralizá conversaciones de <b>WhatsApp, Instagram y Facebook</b> en un solo lugar.
-              </p>
-            </div>
-            <div className="rounded-2xl p-5 bg-white/5 backdrop-blur border border-white/10 shadow-lg">
-              <h3 className="font-semibold">Automatizaciones</h3>
-              <p className="text-slate-300/90 mt-1">
-                Bots y <b>flujos automáticos</b> de atención, venta y seguimiento.
-              </p>
-            </div>
-            <div className="rounded-2xl p-5 bg-white/5 backdrop-blur border border-white/10 shadow-lg">
-              <h3 className="font-semibold">Reportes</h3>
-              <p className="text-slate-300/90 mt-1">
-                Rendimiento en tiempo real con <b>IA</b> y métricas accionables.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* BENEFICIOS */}
-      <section className="max-w-6xl mx-auto px-4 py-10">
-        <div className="grid md:grid-cols-3 gap-6">
-          {[
-            {
-              t: "Captura + Califica",
-              d: "Tomá leads 24/7 y calificalos con IA antes de pasarlos al equipo.",
-            },
-            {
-              t: "Seguimiento automático",
-              d: "Recordatorios, re-contactos y nurturing sin esfuerzo.",
-            },
-            {
-              t: "Integraciones",
-              d: "Meta, WhatsApp Business, CRM y más con APIs simples.",
-            },
-          ].map((f) => (
-            <div
-              key={f.t}
-              className="rounded-2xl p-6 bg-white/5 border border-white/10 hover:border-sky-400/50 transition"
-            >
-              <h4 className="font-semibold mb-1">{f.t}</h4>
-              <p className="text-slate-300/90">{f.d}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA BARRA */}
-      <section className="max-w-5xl mx-auto px-4 py-10">
-        <div className="rounded-2xl p-6 bg-gradient-to-r from-sky-600/20 to-indigo-600/20 border border-sky-400/30">
-          <div className="flex flex-col md:flex-row items-center md:justify-between gap-4">
-            <div>
-              <h3 className="text-xl font-semibold">¿Listo para probar Nuvion IA?</h3>
-              <p className="text-slate-200/90">Agendá una demo y te lo dejamos corriendo.</p>
-            </div>
-            <div className="flex gap-3">
-              <a
-                href="https://wa.me/541161517912?text=Hola%20quiero%20una%20demo%20de%20Nuvion%20IA"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-xl px-5 py-3 bg-emerald-400 text-slate-900 font-semibold hover:bg-emerald-300 transition"
-              >
-                WhatsApp demo
-              </a>
-              <Link
-                href="/contacto"
-                className="inline-flex items-center justify-center rounded-xl px-5 py-3 border border-slate-500/60 hover:bg-slate-800/40 transition"
-              >
-                Formulario
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="max-w-6xl mx-auto px-4 py-10 text-slate-300/80">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-3">
-          <p>© {new Date().getFullYear()} Nuvion IA. Todos los derechos reservados.</p>
-          <div className="flex gap-4">
-            <Link href="/clientes" className="hover:text-white">Clientes</Link>
-            <Link href="/contacto" className="hover:text-white">Contacto</Link>
-          </div>
-        </div>
+      {/* Footer simple */}
+      <footer className="absolute bottom-4 text-xs text-slate-400">
+        © {new Date().getFullYear()} Nuvion IA — Todos los derechos reservados.
       </footer>
     </main>
   );
