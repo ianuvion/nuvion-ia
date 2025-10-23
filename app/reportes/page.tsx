@@ -13,6 +13,7 @@ import {
   Bar,
   Legend,
 } from "recharts";
+import { motion } from "framer-motion";
 
 type Theme = "dark" | "semidark" | "light";
 const THEME_KEY = "nuvion_theme";
@@ -50,13 +51,10 @@ const allDays = Array.from({ length: 30 }).map((_, i) => ({
   cierres: Math.floor(Math.random() * 4),
 }));
 
-/* ===== Util: exportar CSV ===== */
+/* ===== Exportar CSV ===== */
 function downloadCsv(rows: Array<{ day: string; leads: number; demos: number; cierres: number }>, rango: number) {
   const headers = ["dia", "leads", "demos", "cierres"];
-  const lines = [
-    headers.join(","),
-    ...rows.map((r) => [r.day, r.leads, r.demos, r.cierres].join(",")),
-  ];
+  const lines = [headers.join(","), ...rows.map((r) => [r.day, r.leads, r.demos, r.cierres].join(","))];
   const csv = lines.join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
@@ -69,6 +67,16 @@ function downloadCsv(rows: Array<{ day: string; leads: number; demos: number; ci
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+/* ===== Animaciones ===== */
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut", delay } },
+});
+const fade = (delay = 0) => ({
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: 0.45, ease: "easeOut", delay } },
+});
 
 export default function ReportesPage() {
   const theme = useTheme();
@@ -85,61 +93,60 @@ export default function ReportesPage() {
   return (
     <div className={"min-h-screen bg-gradient-to-b " + bg(theme)}>
       <main className="mx-auto max-w-7xl px-4 py-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-          <div>
-            <h1 className="text-xl font-semibold">Reportes</h1>
-            <p className="text-sm opacity-80">Rendimiento de campañas y conversiones.</p>
-          </div>
+        <motion.div {...fadeUp(0)}>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <div>
+              <h1 className="text-xl font-semibold">Reportes</h1>
+              <p className="text-sm opacity-80">Rendimiento de campañas y conversiones.</p>
+            </div>
 
-          {/* Selector de rango + Exportar */}
-          <div className="flex items-center gap-2">
-            {[7, 14, 30].map((n) => (
-              <button
-                key={n}
-                onClick={() => setRange(n as any)}
-                className={`rounded-lg px-3 py-1.5 text-sm border transition ${
-                  range === n
-                    ? "bg-slate-500/40 border-slate-400/60 text-white"
-                    : "border-slate-500/30 text-slate-300 hover:border-slate-400/50"
-                }`}
+            {/* Selector de rango + Exportar */}
+            <div className="flex items-center gap-2">
+              {[7, 14, 30].map((n, idx) => (
+                <motion.button
+                  key={n}
+                  onClick={() => setRange(n as any)}
+                  className={`rounded-lg px-3 py-1.5 text-sm border transition ${
+                    range === n
+                      ? "bg-slate-500/40 border-slate-400/60 text-white"
+                      : "border-slate-500/30 text-slate-300 hover:border-slate-400/50"
+                  }`}
+                  {...fade(idx * 0.05 + 0.05)}
+                >
+                  Últimos {n} días
+                </motion.button>
+              ))}
+
+              <motion.button
+                onClick={() => downloadCsv(data, range)}
+                className="rounded-lg px-3 py-1.5 text-sm border border-slate-400/60 bg-slate-600/40 hover:bg-slate-600/60 text-white"
+                {...fade(0.15)}
               >
-                Últimos {n} días
-              </button>
-            ))}
-
-            <button
-              onClick={() => downloadCsv(data, range)}
-              className="rounded-lg px-3 py-1.5 text-sm border border-slate-400/60 bg-slate-600/40 hover:bg-slate-600/60 text-white"
-            >
-              Descargar CSV
-            </button>
+                Descargar CSV
+              </motion.button>
+            </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* KPIs */}
         <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className={"rounded-2xl border p-4 " + card(theme)}>
-            <p className="text-xs opacity-80">Leads ({range}d)</p>
-            <p className="mt-1 text-2xl md:text-3xl font-semibold">{totalLeads}</p>
-          </div>
-          <div className={"rounded-2xl border p-4 " + card(theme)}>
-            <p className="text-xs opacity-80">Demos ({range}d)</p>
-            <p className="mt-1 text-2xl md:text-3xl font-semibold">{totalDemos}</p>
-          </div>
-          <div className={"rounded-2xl border p-4 " + card(theme)}>
-            <p className="text-xs opacity-80">Cierres ({range}d)</p>
-            <p className="mt-1 text-2xl md:text-3xl font-semibold">{totalCierres}</p>
-          </div>
-          <div className={"rounded-2xl border p-4 " + card(theme)}>
-            <p className="text-xs opacity-80">Tasa de cierre</p>
-            <p className="mt-1 text-2xl md:text-3xl font-semibold">{tasaCierre}%</p>
-          </div>
+          {[
+            { label: `Leads (${range}d)`, value: totalLeads },
+            { label: `Demos (${range}d)`, value: totalDemos },
+            { label: `Cierres (${range}d)`, value: totalCierres },
+            { label: "Tasa de cierre", value: `${tasaCierre}%` },
+          ].map((k, i) => (
+            <motion.div key={k.label} {...fadeUp(0.05 * i + 0.1)} className={"rounded-2xl border p-4 " + card(theme)}>
+              <p className="text-xs opacity-80">{k.label}</p>
+              <p className="mt-1 text-2xl md:text-3xl font-semibold">{k.value}</p>
+            </motion.div>
+          ))}
         </section>
 
         {/* Gráficos */}
         <section className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Leads por día (Área) */}
-          <div className={"rounded-2xl border " + card(theme)}>
+          <motion.div {...fadeUp(0.15)} className={"rounded-2xl border " + card(theme)}>
             <div className={"px-5 pt-4 pb-2 border-b " + divider(theme)}>
               <h2 className="text-sm font-medium">Leads por día</h2>
             </div>
@@ -161,10 +168,10 @@ export default function ReportesPage() {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </motion.div>
 
           {/* Demos y Cierres (Barras) */}
-          <div className={"rounded-2xl border " + card(theme)}>
+          <motion.div {...fadeUp(0.2)} className={"rounded-2xl border " + card(theme)}>
             <div className={"px-5 pt-4 pb-2 border-b " + divider(theme)}>
               <h2 className="text-sm font-medium">Demos y cierres por día</h2>
             </div>
@@ -188,7 +195,7 @@ export default function ReportesPage() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </motion.div>
         </section>
       </main>
     </div>
