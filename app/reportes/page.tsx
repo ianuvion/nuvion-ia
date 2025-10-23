@@ -42,7 +42,7 @@ function divider(theme: Theme) {
   return theme === "light" ? "border-slate-300/40" : "border-slate-500/30";
 }
 
-// 🔹 Datos simulados por 30 días
+/* ===== Datos simulados por 30 días ===== */
 const allDays = Array.from({ length: 30 }).map((_, i) => ({
   day: `D${i + 1}`,
   leads: Math.floor(20 + Math.random() * 50),
@@ -50,11 +50,31 @@ const allDays = Array.from({ length: 30 }).map((_, i) => ({
   cierres: Math.floor(Math.random() * 4),
 }));
 
+/* ===== Util: exportar CSV ===== */
+function downloadCsv(rows: Array<{ day: string; leads: number; demos: number; cierres: number }>, rango: number) {
+  const headers = ["dia", "leads", "demos", "cierres"];
+  const lines = [
+    headers.join(","),
+    ...rows.map((r) => [r.day, r.leads, r.demos, r.cierres].join(",")),
+  ];
+  const csv = lines.join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const today = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `reporte_${rango}d_${today}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 export default function ReportesPage() {
   const theme = useTheme();
   const [range, setRange] = useState<7 | 14 | 30>(7);
 
-  // filtrar los últimos N días
+  // últimos N días
   const data = useMemo(() => allDays.slice(-range), [range]);
 
   const totalLeads = data.reduce((a, b) => a + b.leads, 0);
@@ -71,7 +91,7 @@ export default function ReportesPage() {
             <p className="text-sm opacity-80">Rendimiento de campañas y conversiones.</p>
           </div>
 
-          {/* 🔘 Selector de rango */}
+          {/* Selector de rango + Exportar */}
           <div className="flex items-center gap-2">
             {[7, 14, 30].map((n) => (
               <button
@@ -86,6 +106,13 @@ export default function ReportesPage() {
                 Últimos {n} días
               </button>
             ))}
+
+            <button
+              onClick={() => downloadCsv(data, range)}
+              className="rounded-lg px-3 py-1.5 text-sm border border-slate-400/60 bg-slate-600/40 hover:bg-slate-600/60 text-white"
+            >
+              Descargar CSV
+            </button>
           </div>
         </div>
 
