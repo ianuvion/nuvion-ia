@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -42,42 +42,65 @@ function divider(theme: Theme) {
   return theme === "light" ? "border-slate-300/40" : "border-slate-500/30";
 }
 
-const weekly = [
-  { day: "Lun", leads: 42, demos: 6, cierres: 2 },
-  { day: "Mar", leads: 55, demos: 7, cierres: 3 },
-  { day: "Mié", leads: 48, demos: 5, cierres: 1 },
-  { day: "Jue", leads: 66, demos: 8, cierres: 4 },
-  { day: "Vie", leads: 38, demos: 5, cierres: 2 },
-  { day: "Sáb", leads: 22, demos: 3, cierres: 1 },
-  { day: "Dom", leads: 18, demos: 2, cierres: 0 },
-];
+// 🔹 Datos simulados por 30 días
+const allDays = Array.from({ length: 30 }).map((_, i) => ({
+  day: `D${i + 1}`,
+  leads: Math.floor(20 + Math.random() * 50),
+  demos: Math.floor(3 + Math.random() * 8),
+  cierres: Math.floor(Math.random() * 4),
+}));
 
 export default function ReportesPage() {
   const theme = useTheme();
+  const [range, setRange] = useState<7 | 14 | 30>(7);
 
-  const totalLeads = weekly.reduce((a, b) => a + b.leads, 0);
-  const totalDemos = weekly.reduce((a, b) => a + b.demos, 0);
-  const totalCierres = weekly.reduce((a, b) => a + b.cierres, 0);
+  // filtrar los últimos N días
+  const data = useMemo(() => allDays.slice(-range), [range]);
+
+  const totalLeads = data.reduce((a, b) => a + b.leads, 0);
+  const totalDemos = data.reduce((a, b) => a + b.demos, 0);
+  const totalCierres = data.reduce((a, b) => a + b.cierres, 0);
   const tasaCierre = totalDemos > 0 ? Math.round((totalCierres / totalDemos) * 100) : 0;
 
   return (
     <div className={"min-h-screen bg-gradient-to-b " + bg(theme)}>
       <main className="mx-auto max-w-7xl px-4 py-6">
-        <h1 className="text-xl font-semibold">Reportes</h1>
-        <p className="text-sm opacity-80 mb-4">Resumen semanal de actividad y rendimiento.</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+          <div>
+            <h1 className="text-xl font-semibold">Reportes</h1>
+            <p className="text-sm opacity-80">Rendimiento de campañas y conversiones.</p>
+          </div>
+
+          {/* 🔘 Selector de rango */}
+          <div className="flex items-center gap-2">
+            {[7, 14, 30].map((n) => (
+              <button
+                key={n}
+                onClick={() => setRange(n as any)}
+                className={`rounded-lg px-3 py-1.5 text-sm border transition ${
+                  range === n
+                    ? "bg-slate-500/40 border-slate-400/60 text-white"
+                    : "border-slate-500/30 text-slate-300 hover:border-slate-400/50"
+                }`}
+              >
+                Últimos {n} días
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* KPIs */}
         <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className={"rounded-2xl border p-4 " + card(theme)}>
-            <p className="text-xs opacity-80">Leads (semana)</p>
+            <p className="text-xs opacity-80">Leads ({range}d)</p>
             <p className="mt-1 text-2xl md:text-3xl font-semibold">{totalLeads}</p>
           </div>
           <div className={"rounded-2xl border p-4 " + card(theme)}>
-            <p className="text-xs opacity-80">Demos (semana)</p>
+            <p className="text-xs opacity-80">Demos ({range}d)</p>
             <p className="mt-1 text-2xl md:text-3xl font-semibold">{totalDemos}</p>
           </div>
           <div className={"rounded-2xl border p-4 " + card(theme)}>
-            <p className="text-xs opacity-80">Cierres (semana)</p>
+            <p className="text-xs opacity-80">Cierres ({range}d)</p>
             <p className="mt-1 text-2xl md:text-3xl font-semibold">{totalCierres}</p>
           </div>
           <div className={"rounded-2xl border p-4 " + card(theme)}>
@@ -95,7 +118,7 @@ export default function ReportesPage() {
             </div>
             <div className="h-[320px] p-4">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={weekly}>
+                <AreaChart data={data}>
                   <CartesianGrid stroke="rgba(148,163,184,0.25)" strokeDasharray="3 3" />
                   <XAxis dataKey="day" stroke="currentColor" opacity={0.7} />
                   <YAxis stroke="currentColor" opacity={0.7} />
@@ -120,7 +143,7 @@ export default function ReportesPage() {
             </div>
             <div className="h-[320px] p-4">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={weekly}>
+                <BarChart data={data}>
                   <CartesianGrid stroke="rgba(148,163,184,0.25)" strokeDasharray="3 3" />
                   <XAxis dataKey="day" stroke="currentColor" opacity={0.7} />
                   <YAxis stroke="currentColor" opacity={0.7} />
