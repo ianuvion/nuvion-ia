@@ -1,16 +1,16 @@
 // app/layout.tsx
 
-// 🔒 Fuerza rendering dinámico en todo el árbol (evita SSG/ISR y timeouts de build)
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 import './globals.css';
 import type { Metadata } from 'next';
+import Navbar from './components/Navbar';
 import React from 'react';
 
 export const metadata: Metadata = {
   title: 'Nuvion IA',
-  description: 'Plataforma de automatización con IA',
+  description: 'Dashboard y herramientas de Nuvion IA',
 };
 
 export default function RootLayout({
@@ -20,7 +20,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body>{children}</body>
+      <body className="antialiased bg-slate-900 text-slate-100 min-h-screen">
+        {/* ✅ Navbar visible en todo el sitio */}
+        <Navbar />
+
+        {/* ✅ Contenido principal (cada página) */}
+        <div className="pt-16 px-4">{children}</div>
+      </body>
     </html>
   );
 }
