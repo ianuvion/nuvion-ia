@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react';
 
 function getCookie(name: string) {
   if (typeof document === 'undefined') return null;
-  const m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/[-.$?*|{}()[\]\\/+^]/g, '\\$&') + '=([^;]*)'));
+  const m = document.cookie.match(
+    new RegExp('(?:^|; )' + name.replace(/[-.$?*|{}()[\]\\/+^]/g, '\\$&') + '=([^;]*)')
+  );
   return m ? decodeURIComponent(m[1]) : null;
 }
 
@@ -14,8 +16,17 @@ function setCookie(name: string, value: string, days = 365) {
   document.cookie = `${name}=${encodeURIComponent(value)}; Max-Age=${maxAge}; Path=/; SameSite=Lax`;
 }
 
+function deleteCookie(name: string) {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax`;
+}
+
 const LS_KEY = 'brand.logoUrl';
 const CK_KEY = 'brand_logo';
+
+// Config de validación
+const MAX_MB = 2; // tamaño máx. 2MB
+const ALLOWED = ['image/png', 'image/jpeg']; // PNG o JPG
 
 export default function BrandPage() {
   const [currentLogo, setCurrentLogo] = useState<string | null>(null);
@@ -23,7 +34,7 @@ export default function BrandPage() {
   const [error, setError] = useState<string | null>(null);
   const [okMsg, setOkMsg] = useState<string | null>(null);
 
-  // Cargar logo al montar: primero localStorage, si no hay, cookie
+  // Cargar logo al montar
   useEffect(() => {
     try {
       const ls = localStorage.getItem(LS_KEY);
@@ -36,11 +47,23 @@ export default function BrandPage() {
     if (ck) setCurrentLogo(ck);
   }, []);
 
+  function validate(file: File) {
+    if (!ALLOWED.includes(file.type)) {
+      throw new Error('Formato no permitido. Solo PNG o JPG.');
+    }
+    const maxBytes = MAX_MB * 1024 * 1024;
+    if (file.size > maxBytes) {
+      throw new Error(`El archivo supera ${MAX_MB}MB.`);
+    }
+  }
+
   async function handleFile(file: File) {
     setBusy(true);
     setError(null);
     setOkMsg(null);
     try {
+      validate(file);
+
       const res = await fetch('/api/upload', {
         method: 'POST',
         headers: {
@@ -55,15 +78,17 @@ export default function BrandPage() {
         throw new Error(data?.message || 'No se pudo subir el archivo a S3.');
       }
 
-      // Persistencia doble
+      // Persistencia
       try { localStorage.setItem(LS_KEY, data.url); } catch {}
-      setCookie(CK_KEY, data.url); // disponible incluso si LS falla
+      setCookie(CK_KEY, data.url);
 
       setCurrentLogo(data.url);
 
-      // Notificar a otros tabs/componentes (Navbar)
+      // Avisar a otros tabs/componentes
       try {
-        window.dispatchEvent(new StorageEvent('storage', { key: LS_KEY, newValue: data.url }));
+        window.dispatchEvent(
+          new StorageEvent('storage', { key: LS_KEY, newValue: data.url })
+        );
       } catch {}
 
       setOkMsg('¡Logo actualizado!');
@@ -86,12 +111,35 @@ export default function BrandPage() {
     if (file) handleFile(file);
   }
 
+  function removeLogo() {
+    setError(null);
+    setOkMsg(null);
+    try { localStorage.removeItem(LS_KEY); } catch {}
+    deleteCookie(CK_KEY);
+    setCurrentLogo(null);
+    try {
+      window.dispatchEvent(new StorageEvent('storage', { key: LS_KEY, newValue: null }));
+    } catch {}
+    setOkMsg('Logo eliminado.');
+  }
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-semibold mb-8">Configuración de Marca</h1>
 
       <div className="bg-slate-800/40 border border-slate-700 rounded-xl p-6">
-        <h2 className="text-lg font-medium mb-4">Logo actual</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-medium">Logo actual</h2>
+
+          <button
+            onClick={removeLogo}
+            disabled={busy || !currentLogo}
+            className="text-sm px-3 py-1.5 rounded-md border border-slate-600 hover:bg-slate-700 disabled:opacity-50"
+            title="Eliminar logo"
+          >
+            Eliminar logo
+          </button>
+        </div>
 
         <div className="mb-6">
           <div className="w-40 h-40 bg-slate-900 border border-slate-700 rounded-lg grid place-items-center overflow-hidden">
@@ -114,12 +162,15 @@ export default function BrandPage() {
             elegila desde tu equipo
             <input
               type="file"
-              accept="image/*"
+              accept="image/png,image/jpeg"
               className="hidden"
               onChange={onInputChange}
               disabled={busy}
             />
           </label>
+          <p className="mt-2 text-xs text-slate-400">
+            Máx. {MAX_MB}MB. Formatos permitidos: PNG o JPG.
+          </p>
         </div>
 
         <p className="mt-4 text-xs text-slate-400">
