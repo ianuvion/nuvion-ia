@@ -1,10 +1,9 @@
-// 👇 Indica que este endpoint se ejecuta en Node.js (no Edge)
-export const runtime = 'nodejs';
+// app/api/upload/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
-import { NextResponse } from "next/server";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+export const runtime = 'nodejs'; // usar Node, no Edge
 
-// 🔧 Configuración del cliente S3
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
   credentials: {
@@ -13,41 +12,37 @@ const s3 = new S3Client({
   },
 });
 
-// 🧩 Endpoint POST para subir archivos
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData();
-    const file = formData.get("file") as File;
+    const form = await req.formData();
+    const file = form.get('file') as File | null;
 
     if (!file) {
-      return NextResponse.json({ error: "No se recibió ningún archivo" }, { status: 400 });
+      return NextResponse.json({ error: 'Falta el campo "file"' }, { status: 400 });
     }
 
     const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const body = Buffer.from(arrayBuffer);
 
-    // 📁 Nombre del archivo dentro del bucket
-    const key = `uploads/${Date.now()}_${file.name}`;
+    const key = `logos/${Date.now()}-${file.name}`.replace(/\s+/g, '_');
 
-    // 📤 Subida a S3
-    await s3.send(
-      new PutObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET_NAME!,
-        Key: key,
-        Body: buffer,
-        ContentType: file.type,
-      })
-    );
-
-    // 🌐 URL pública del archivo subido
-    const fileUrl = `https://${process.env.AWS_S3_BUCKET_NAME!}.s3.${process.env.AWS_REGION!}.amazonaws.com/${key}`;
-
-    return NextResponse.json({
-      message: "✅ Archivo subido correctamente",
-      url: fileUrl,
+    // Nota: Sin ACL. Si el bucket tiene "Bucket owner enforced", ACL no está permitido.
+    const cmd = new PutObjectCommand({
+      Bucket: process.env.AWS_S3_BUCKET_NAME!,
+      Key: key,
+      Body: body,
+      ContentType: file.type || 'application/octet-stream',
     });
-  } catch (error) {
-    console.error("❌ Error al subir el archivo:", error);
-    return NextResponse.json({ error: "Error al subir el archivo a S3" }, { status: 500 });
+
+    await s3.send(cmd);
+
+    const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+    return NextResponse.json({ ok: true, url });
+  } catch (err: any) {
+    console.error('UPLOAD ERROR:', err); // miralo en Vercel → Runtime Logs
+    return NextResponse.json(
+      { error: 'upload_error', message: err?.message || 'Error desconocido' },
+      { status: 500 }
+    );
   }
 }
