@@ -1,130 +1,108 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-
-const DEFAULT_LOGO = '/logo.svg'; // Si tenés otro logo por defecto en /public, cambialo acá
-
-type UploadState =
-  | { status: 'idle' }
-  | { status: 'uploading'; filename: string }
-  | { status: 'success'; url: string }
-  | { status: 'error'; message: string };
+import { useState } from 'react';
 
 export default function BrandPage() {
-  const [currentLogo, setCurrentLogo] = useState<string>(DEFAULT_LOGO);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [state, setState] = useState<UploadState>({ status: 'idle' });
+  const [currentLogo, setCurrentLogo] = useState<string | null>(
+    typeof window !== 'undefined' ? localStorage.getItem('brand.logoUrl') : null
+  );
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [okMsg, setOkMsg] = useState<string | null>(null);
 
-  // Cargar logo guardado si existe
-  useEffect(() => {
-    const saved = typeof window !== 'undefined'
-      ? localStorage.getItem('brandLogoUrl')
-      : null;
-    if (saved) setCurrentLogo(saved);
-  }, []);
-
-  const uploadFile = useCallback(async (file: File) => {
+  async function handleFile(file: File) {
+    setBusy(true);
+    setError(null);
+    setOkMsg(null);
     try {
-      setState({ status: 'uploading', filename: file.name });
-
-      const buffer = await file.arrayBuffer();
+      // enviamos binario en el body y el nombre por header
       const res = await fetch('/api/upload', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/octet-stream',
           'x-filename': file.name,
+          'content-type': file.type || 'application/octet-stream',
         },
-        body: new Uint8Array(buffer),
+        body: await file.arrayBuffer(),
       });
 
       const data = await res.json().catch(() => ({}));
-
       if (!res.ok || !data?.url) {
         throw new Error(
-          data?.message || 'No se pudo subir el archivo. Intenta nuevamente.'
+          data?.message || 'No se pudo subir el archivo a S3 (revisá las credenciales/política).'
         );
       }
 
-      // Guardar y notificar al Navbar
-      localStorage.setItem('brandLogoUrl', data.url);
-      window.dispatchEvent(new Event('brandLogoUpdated'));
-
-      setPreview(null);
+      // Guardamos en localStorage para que persista entre recargas
+      localStorage.setItem('brand.logoUrl', data.url);
       setCurrentLogo(data.url);
-      setState({ status: 'success', url: data.url });
-    } catch (err: any) {
-      setState({
-        status: 'error',
-        message: err?.message || 'Error inesperado al subir el archivo',
-      });
+
+      // Notificamos a otros componentes (Navbar) que cambió el logo
+      window.dispatchEvent(new StorageEvent('storage', { key: 'brand.logoUrl', newValue: data.url }));
+
+      setOkMsg('¡Logo actualizado!');
+    } catch (e: any) {
+      setError(e?.message || 'Error al subir');
+    } finally {
+      setBusy(false);
     }
-  }, []);
+  }
 
-  const onFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  function onInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (!file) return;
-    setPreview(URL.createObjectURL(file));
-    await uploadFile(file);
-  };
+    if (file) handleFile(file);
+    e.currentTarget.value = '';
+  }
 
-  const onDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+  function onDrop(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
-    if (!file) return;
-    setPreview(URL.createObjectURL(file));
-    await uploadFile(file);
-  };
-
-  const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
+    if (file) handleFile(file);
+  }
 
   return (
-    <main className="mx-auto max-w-3xl p-6">
-      <h1 className="mb-6 text-2xl font-semibold text-white">Configuración de Marca</h1>
+    <div className="max-w-3xl mx-auto px-4 py-10">
+      <h1 className="text-3xl font-semibold mb-8">Configuración de Marca</h1>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900 p-4">
-        <h2 className="mb-3 text-lg font-medium text-slate-200">Logo actual</h2>
-        <div className="flex items-center gap-4">
-          <img
-            src={preview || currentLogo}
-            alt="Logo actual"
-            className="h-16 w-auto rounded-md border border-slate-800 bg-slate-800 object-contain p-2"
-          />
-          {state.status === 'uploading' && (
-            <span className="text-sm text-slate-400">
-              Subiendo <b>{state.filename}</b>…
-            </span>
-          )}
-          {state.status === 'success' && (
-            <span className="text-sm text-emerald-400">¡Logo actualizado!</span>
-          )}
-          {state.status === 'error' && (
-            <span className="text-sm text-rose-400">{state.message}</span>
-          )}
+      <div className="bg-slate-800/40 border border-slate-700 rounded-xl p-6">
+        <h2 className="text-lg font-medium mb-4">Logo actual</h2>
+
+        <div className="mb-6">
+          <div className="w-40 h-40 bg-slate-900 border border-slate-700 rounded-lg grid place-items-center overflow-hidden">
+            {currentLogo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={currentLogo} alt="Logo actual" className="max-w-full max-h-full object-contain" />
+            ) : (
+              <span className="text-slate-400 text-sm">Sin logo</span>
+            )}
+          </div>
         </div>
 
         <div
+          onDragOver={(e) => e.preventDefault()}
           onDrop={onDrop}
-          onDragOver={onDragOver}
-          className="mt-6 rounded-md border-2 border-dashed border-slate-700 p-6 text-center text-slate-300 hover:border-slate-500"
+          className="border-2 border-dashed border-slate-600 rounded-lg p-6 text-center"
         >
-          Arrastrá y soltá tu imagen aquí (PNG/JPG) o
-          <label className="ml-2 inline-block cursor-pointer text-sky-400 hover:underline">
+          <p className="mb-2">Arrastrá y soltá tu imagen aquí (PNG/JPG)</p>
+          <label className="inline-block px-4 py-2 rounded-md bg-sky-600 hover:bg-sky-700 cursor-pointer">
             elegila desde tu equipo
             <input
               type="file"
-              accept="image/png,image/jpeg"
+              accept="image/*"
               className="hidden"
-              onChange={onFileInput}
+              onChange={onInputChange}
+              disabled={busy}
             />
           </label>
         </div>
 
-        <p className="mt-3 text-xs text-slate-500">
+        <p className="mt-4 text-xs text-slate-400">
           Sugerencia: 512×512 px, formato PNG con fondo transparente.
         </p>
-      </section>
-    </main>
+
+        {busy && <p className="mt-4 text-slate-300">Subiendo…</p>}
+        {okMsg && <p className="mt-4 text-green-400">{okMsg}</p>}
+        {error && <p className="mt-4 text-red-400">{error}</p>}
+      </div>
+    </div>
   );
 }
