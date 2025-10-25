@@ -1,59 +1,50 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
+
+const DEFAULT_LOGO = '/logo.svg'; // Cambiá si tu logo por defecto es otro archivo en /public
 
 export default function Navbar() {
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [logoUrl, setLogoUrl] = useState<string>(DEFAULT_LOGO);
 
   useEffect(() => {
-    // 1️⃣ Cargar el logo guardado en localStorage (si existe)
-    const saved = localStorage.getItem('nuvion_logo_url');
+    // Al montar, leo lo guardado por el uploader
+    const saved = typeof window !== 'undefined'
+      ? localStorage.getItem('brandLogoUrl')
+      : null;
     if (saved) setLogoUrl(saved);
 
-    // 2️⃣ Escuchar cambios si el logo se actualiza desde otra pestaña
-    function onStorage(e: StorageEvent) {
-      if (e.key === 'nuvion_logo_url') {
-        setLogoUrl(e.newValue);
-      }
-    }
+    // Escucho cuando el uploader avise que hay un nuevo logo
+    const handleUpdate = () => {
+      const updated = localStorage.getItem('brandLogoUrl');
+      if (updated) setLogoUrl(updated);
+    };
 
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    window.addEventListener('brandLogoUpdated', handleUpdate);
+    window.addEventListener('storage', handleUpdate); // por si se cambia en otra pestaña
+
+    return () => {
+      window.removeEventListener('brandLogoUpdated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
   }, []);
 
-  // 3️⃣ Si no hay logo en S3, usa el icono base del proyecto
-  const src = logoUrl || '/icon.png';
-
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-700/40 bg-slate-800/85 backdrop-blur">
-      <div className="mx-auto max-w-7xl px-4 h-14 flex items-center justify-between">
-        {/* 🔗 Logo y enlace al inicio */}
-        <Link href="/" className="flex items-center gap-2" aria-label="Ir al inicio">
-          <Image
-            src={src}
-            alt="Nuvion IA"
-            width={30}
-            height={30}
-            className="brightness-125 drop-shadow-[0_0_8px_rgba(255,255,255,0.25)] ring-1 ring-white/10 rounded-md"
-          />
-          <span className="text-sm font-semibold text-slate-100 tracking-tight">
-            Nuvion IA
-          </span>
+    <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-900/60 backdrop-blur">
+      <div className="mx-auto flex max-w-6xl items-center gap-3 p-3">
+        <img
+          src={logoUrl}
+          alt="Logo"
+          className="h-8 w-auto rounded-md object-contain"
+        />
+        <Link href="/" className="font-medium text-white">
+          Nuvion IA
         </Link>
 
-        {/* Menú derecho (agregá botones o links si querés) */}
-        <nav className="flex items-center gap-4">
-          <Link href="/dashboard" className="text-slate-200 hover:text-white text-sm">
-            Dashboard
-          </Link>
-          <Link href="/clientes" className="text-slate-200 hover:text-white text-sm">
-            Clientes
-          </Link>
-          <Link href="/configuracion" className="text-slate-200 hover:text-white text-sm">
-            Configuración
-          </Link>
+        <nav className="ml-auto flex items-center gap-4 text-slate-300">
+          <Link href="/dashboard">Dashboard</Link>
+          <Link href="/configuracion/brand">Brand</Link>
         </nav>
       </div>
     </header>
