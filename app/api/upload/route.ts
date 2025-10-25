@@ -1,39 +1,53 @@
-import { NextResponse } from "next/server";
-import AWS from "aws-sdk";
+// 👇 Indica que este endpoint se ejecuta en Node.js (no Edge)
+export const runtime = 'nodejs';
 
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+import { NextResponse } from "next/server";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+
+// 🔧 Configuración del cliente S3
+const s3 = new S3Client({
   region: process.env.AWS_REGION!,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
 });
 
+// 🧩 Endpoint POST para subir archivos
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File;
 
     if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+      return NextResponse.json({ error: "No se recibió ningún archivo" }, { status: 400 });
     }
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const uploadParams = {
-      Bucket: process.env.AWS_S3_BUCKET_NAME!,
-      Key: `uploads/${Date.now()}_${file.name}`,
-      Body: buffer,
-      ContentType: file.type,
-    };
+    // 📁 Nombre del archivo dentro del bucket
+    const key = `uploads/${Date.now()}_${file.name}`;
 
-    const result = await s3.upload(uploadParams).promise();
+    // 📤 Subida a S3
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: process.env.AWS_S3_BUCKET_NAME!,
+        Key: key,
+        Body: buffer,
+        ContentType: file.type,
+      })
+    );
+
+    // 🌐 URL pública del archivo subido
+    const fileUrl = `https://${process.env.AWS_S3_BUCKET_NAME!}.s3.${process.env.AWS_REGION!}.amazonaws.com/${key}`;
 
     return NextResponse.json({
-      message: "Archivo subido correctamente",
-      url: result.Location,
+      message: "✅ Archivo subido correctamente",
+      url: fileUrl,
     });
   } catch (error) {
-    console.error("Upload error:", error);
-    return NextResponse.json({ error: "Error al subir el archivo" }, { status: 500 });
+    console.error("❌ Error al subir el archivo:", error);
+    return NextResponse.json({ error: "Error al subir el archivo a S3" }, { status: 500 });
   }
 }
