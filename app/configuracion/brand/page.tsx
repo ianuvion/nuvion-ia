@@ -1,21 +1,46 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+function getCookie(name: string) {
+  if (typeof document === 'undefined') return null;
+  const m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/[-.$?*|{}()[\]\\/+^]/g, '\\$&') + '=([^;]*)'));
+  return m ? decodeURIComponent(m[1]) : null;
+}
+
+function setCookie(name: string, value: string, days = 365) {
+  if (typeof document === 'undefined') return;
+  const maxAge = days * 24 * 60 * 60;
+  document.cookie = `${name}=${encodeURIComponent(value)}; Max-Age=${maxAge}; Path=/; SameSite=Lax`;
+}
+
+const LS_KEY = 'brand.logoUrl';
+const CK_KEY = 'brand_logo';
 
 export default function BrandPage() {
-  const [currentLogo, setCurrentLogo] = useState<string | null>(
-    typeof window !== 'undefined' ? localStorage.getItem('brand.logoUrl') : null
-  );
+  const [currentLogo, setCurrentLogo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [okMsg, setOkMsg] = useState<string | null>(null);
+
+  // Cargar logo al montar: primero localStorage, si no hay, cookie
+  useEffect(() => {
+    try {
+      const ls = localStorage.getItem(LS_KEY);
+      if (ls) {
+        setCurrentLogo(ls);
+        return;
+      }
+    } catch {}
+    const ck = getCookie(CK_KEY);
+    if (ck) setCurrentLogo(ck);
+  }, []);
 
   async function handleFile(file: File) {
     setBusy(true);
     setError(null);
     setOkMsg(null);
     try {
-      // enviamos binario en el body y el nombre por header
       const res = await fetch('/api/upload', {
         method: 'POST',
         headers: {
@@ -27,17 +52,19 @@ export default function BrandPage() {
 
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data?.url) {
-        throw new Error(
-          data?.message || 'No se pudo subir el archivo a S3 (revisá las credenciales/política).'
-        );
+        throw new Error(data?.message || 'No se pudo subir el archivo a S3.');
       }
 
-      // Guardamos en localStorage para que persista entre recargas
-      localStorage.setItem('brand.logoUrl', data.url);
+      // Persistencia doble
+      try { localStorage.setItem(LS_KEY, data.url); } catch {}
+      setCookie(CK_KEY, data.url); // disponible incluso si LS falla
+
       setCurrentLogo(data.url);
 
-      // Notificamos a otros componentes (Navbar) que cambió el logo
-      window.dispatchEvent(new StorageEvent('storage', { key: 'brand.logoUrl', newValue: data.url }));
+      // Notificar a otros tabs/componentes (Navbar)
+      try {
+        window.dispatchEvent(new StorageEvent('storage', { key: LS_KEY, newValue: data.url }));
+      } catch {}
 
       setOkMsg('¡Logo actualizado!');
     } catch (e: any) {
@@ -96,7 +123,7 @@ export default function BrandPage() {
         </div>
 
         <p className="mt-4 text-xs text-slate-400">
-          Sugerencia: 512×512 px, formato PNG con fondo transparente.
+          Sugerencia: 512×512 px, PNG con fondo transparente.
         </p>
 
         {busy && <p className="mt-4 text-slate-300">Subiendo…</p>}
