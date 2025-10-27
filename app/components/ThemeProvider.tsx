@@ -1,59 +1,45 @@
 'use client';
 
-import React from 'react';
+import { useEffect } from 'react';
 
-type Theme = 'oscuro' | 'semi-dark' | 'claro';
+export type AppTheme = 'dark' | 'semi' | 'light';
+const THEME_KEY = 'nuvion_theme';
 
-const THEME_KEY = 'nuvion-theme';
-
-function applyTheme(theme: Theme) {
-  const root = document.documentElement;
-
-  // Limpiar clases anteriores
-  root.classList.remove('theme-oscuro', 'theme-semi-dark', 'theme-claro');
-
-  // Agregar clase del tema elegido
-  if (theme === 'semi-dark') root.classList.add('theme-semi-dark');
-  else if (theme === 'claro') root.classList.add('theme-claro');
-  else root.classList.add('theme-oscuro'); // default
-
-  // Guardar preferencia
-  localStorage.setItem(THEME_KEY, theme);
+export function getStoredTheme(): AppTheme {
+  if (typeof window === 'undefined') return 'dark';
+  const v = window.localStorage.getItem(THEME_KEY) as AppTheme | null;
+  return v ?? 'dark';
 }
 
-export const ThemeContext = React.createContext<{
-  theme: Theme;
-  setTheme: (t: Theme) => void;
-}>({
-  theme: 'oscuro',
-  setTheme: () => {},
-});
+export function setStoredTheme(t: AppTheme) {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(THEME_KEY, t);
+}
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = React.useState<Theme>('oscuro');
-
-  React.useEffect(() => {
-    // Cargar desde storage o preferencia de sistema
-    const stored = localStorage.getItem(THEME_KEY) as Theme | null;
-    const initial: Theme =
-      stored ??
-      (window.matchMedia &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'oscuro'
-        : 'semi-dark');
-
-    setTheme(initial);
-    applyTheme(initial);
+  useEffect(() => {
+    const t = getStoredTheme();
+    applyThemeClass(t);
   }, []);
 
-  const handleSetTheme = React.useCallback((t: Theme) => {
-    setTheme(t);
-    applyTheme(t);
+  const applyThemeClass = (t: AppTheme) => {
+    const root = document.documentElement;
+    root.classList.remove('theme-dark', 'theme-semidark', 'theme-light');
+    if (t === 'light') root.classList.add('theme-light');
+    else if (t === 'semi') root.classList.add('theme-semidark');
+    else root.classList.add('theme-dark');
+  };
+
+  // escucha cambios externos (p.ej. desde otro tab)
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === THEME_KEY && e.newValue) {
+        applyThemeClass(e.newValue as AppTheme);
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme: handleSetTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <>{children}</>;
 }
