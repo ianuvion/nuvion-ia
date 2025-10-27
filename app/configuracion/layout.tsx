@@ -21,8 +21,26 @@ export default function ConfigLayout({ children }: { children: React.ReactNode }
 
   return (
     <main className="max-w-5xl mx-auto px-6 py-10">
-      <h1 className="text-2xl font-bold mb-6">Configuración</h1>
+      {/* Barra superior con volver */}
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Configuración</h1>
+        <div className="flex gap-2">
+          <Link
+            href="/dashboard"
+            className="px-3 py-2 rounded-lg text-sm border border-white/20 hover:bg-white/5"
+          >
+            ← Volver al Dashboard
+          </Link>
+          <Link
+            href="/"
+            className="px-3 py-2 rounded-lg text-sm border border-white/20 hover:bg-white/5"
+          >
+            Inicio
+          </Link>
+        </div>
+      </div>
 
+      {/* Tabs */}
       <div className="flex gap-2 mb-8">
         <Tab href="/configuracion" label="General" />
         <Tab href="/configuracion/apariencia" label="Apariencia" />
@@ -32,3 +50,4 @@ export default function ConfigLayout({ children }: { children: React.ReactNode }
     </main>
   );
 }
+
