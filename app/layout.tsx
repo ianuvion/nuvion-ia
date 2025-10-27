@@ -5,8 +5,11 @@ export const revalidate = 0;
 
 import './globals.css';
 import type { Metadata } from 'next';
-import Navbar from './components/Navbar';
 import React from 'react';
+
+import Navbar from './components/Navbar';
+import ThemeProvider from './components/ThemeProvider';
+import BrandTheme from './components/BrandTheme';
 
 export const metadata: Metadata = {
   title: 'Nuvion IA',
@@ -20,12 +23,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className="antialiased bg-slate-900 text-slate-100 min-h-screen">
-        {/* ✅ Navbar visible en todo el sitio */}
-        <Navbar />
+      <body className="antialiased min-h-screen">
+        <ThemeProvider>
+          {/* Aplica variable CSS --brand (color de marca) */}
+          <BrandTheme />
 
-        {/* ✅ Contenido principal (cada página) */}
-        <div className="pt-16 px-4">{children}</div>
+          {/* Barra superior */}
+          <Navbar />
+
+          {/* Contenido de cada página */}
+          <div className="pt-16 px-4">{children}</div>
+        </ThemeProvider>
       </body>
     </html>
   );
