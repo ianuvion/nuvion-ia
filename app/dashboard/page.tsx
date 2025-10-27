@@ -1,148 +1,40 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import { ResponsiveContainer, FunnelChart, Funnel, LabelList, Tooltip } from "recharts";
-
-type Theme = "dark" | "semidark" | "light";
-const THEME_KEY = "nuvion_theme";
-
-function useTheme(): Theme {
-  const [t, setT] = useState<Theme>("semidark");
-  useEffect(() => {
-    try {
-      const saved = (localStorage.getItem(THEME_KEY) as Theme) || "semidark";
-      setT(saved);
-    } catch {}
-  }, []);
-  return t;
-}
-
-function bg(theme: Theme) {
-  if (theme === "light") return "from-slate-100 via-slate-100 to-white text-slate-900";
-  if (theme === "semidark") return "from-slate-700 via-slate-700 to-slate-600 text-slate-50";
-  return "from-slate-800 via-slate-800 to-slate-700 text-slate-100";
-}
-function card(theme: Theme) {
-  if (theme === "light") return "border-slate-300/60 bg-white/80";
-  if (theme === "semidark") return "border-slate-400/50 bg-slate-600/40";
-  return "border-slate-500/50 bg-slate-700/50";
-}
-function divider(theme: Theme) {
-  return theme === "light" ? "border-slate-300/40" : "border-slate-500/30";
-}
-
-type Row = { name: string; status: "Activo" | "Onboarding" | "Prueba"; note: string };
-
-const KPIS = [
-  { label: "Clientes", value: 5 },
-  { label: "Activos", value: 2 },
-  { label: "Onboarding", value: 2 },
-  { label: "En Prueba", value: 1 },
-];
-
-const FUNNEL_DATA = [
-  { name: "Leads", value: 1200 },
-  { name: "Contactados", value: 800 },
-  { name: "Demos", value: 420 },
-  { name: "Cierres", value: 160 },
-];
-
-const RECENT: Row[] = [
-  { name: "RC Plenitud Seguros", status: "Onboarding", note: "Conectar WhatsApp API oficial" },
-  { name: "Power Tech", status: "Activo", note: "Optimizar flujo de seguimiento" },
-  { name: "Lava Autos Venecia", status: "Prueba", note: "A/B de script de ventas" },
-  { name: "La Fonda de Don Luis", status: "Activo", note: "Embudo de reservas" },
-  { name: "NovaFit", status: "Onboarding", note: "Definir tono del agente" },
-];
-
-function Badge(props: { status: Row["status"] }) {
-  const map: Record<Row["status"], string> = {
-    Activo: "bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-400/30 shadow",
-    Onboarding: "bg-amber-500/15 text-amber-200 ring-1 ring-amber-400/30 shadow",
-    Prueba: "bg-sky-500/15 text-sky-200 ring-1 ring-sky-400/30 shadow",
-  };
-  return <span className={"px-2 py-0.5 text-xs rounded-full " + map[props.status]}>{props.status}</span>;
-}
+import React from 'react';
 
 export default function DashboardPage() {
-  const theme = useTheme();
-
   return (
-    <div className={"min-h-screen bg-gradient-to-b " + bg(theme)}>
-      <main className="mx-auto max-w-7xl px-4 py-4">
-        {/* KPIs */}
-        <section className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {KPIS.map((k) => (
-            <div key={k.label} className={"rounded-2xl border p-4 shadow-sm " + card(theme)}>
-              <p className="text-xs md:text-sm opacity-80">{k.label}</p>
-              <p className="mt-1 text-2xl md:text-3xl font-semibold tracking-tight">{k.value}</p>
-            </div>
-          ))}
-        </section>
+    <main className="max-w-7xl mx-auto px-4 py-10">
+      <h1 className="text-3xl font-semibold mb-8">Dashboard General</h1>
 
-        {/* Embudo + Clientes recientes */}
-        <section className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Embudo */}
-          <div className={"rounded-2xl border " + card(theme)}>
-            <div className={"px-5 pt-4 pb-2 border-b " + divider(theme) + " flex items-center justify-between"}>
-              <h2 className="text-sm font-medium">Embudo de ventas</h2>
-              <span className="text-xs opacity-80">Datos demo</span>
-            </div>
-            <div className="h-[320px] p-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <FunnelChart>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: theme === "light" ? "#ffffff" : "#334155",
-                      border: "1px solid rgba(148,163,184,0.25)",
-                      borderRadius: 12,
-                      color: theme === "light" ? "#0f172a" : "#e5e7eb",
-                    }}
-                  />
-                  <Funnel data={FUNNEL_DATA} dataKey="value" isAnimationActive fill="#93c5fd" stroke="rgba(148,163,184,0.5)" strokeWidth={1}>
-                    <LabelList dataKey="value" position="inside" fill="#0b1220" stroke="none" />
-                  </Funnel>
-                </FunnelChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <Card title="Clientes Activos" value="24" color="bg-emerald-700/30" />
+        <Card title="Embudos en Marcha" value="12" color="bg-indigo-700/30" />
+        <Card title="Ventas Cerradas" value="87" color="bg-blue-700/30" />
+        <Card title="Tasa de Conversión" value="12.4%" color="bg-purple-700/30" />
+      </div>
 
-          {/* Clientes recientes */}
-          <div className={"rounded-2xl border " + card(theme)}>
-            <div className={"px-5 pt-4 pb-2 border-b " + divider(theme) + " flex items-center justify-between"}>
-              <h2 className="text-sm font-medium">Clientes recientes</h2>
-              <Link href="/clientes" className="text-xs md:text-sm rounded-lg border border-slate-400/50 bg-slate-600/40 px-2.5 py-1.5 hover:bg-slate-600/60">
-                Ver todos →
-              </Link>
-            </div>
-            <div className="p-4">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-left text-xs opacity-80">
-                      <th className="py-2 font-normal">Cliente</th>
-                      <th className="py-2 font-normal">Estado</th>
-                      <th className="py-2 font-normal">Notas</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-500/30">
-                    {RECENT.map((c) => (
-                      <tr key={c.name} className="hover:bg-slate-600/30">
-                        <td className="py-3 pr-3">{c.name}</td>
-                        <td className="py-3 pr-3"><Badge status={c.status} /></td>
-                        <td className="py-3">{c.note}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </section>
+      <div className="rounded-lg border border-[#233043] bg-[#0f1729] p-6">
+        <h2 className="text-xl font-medium mb-4">Resumen General</h2>
+        <p className="text-gray-300 leading-relaxed">
+          Bienvenido al panel principal de <strong>Nuvion IA</strong>.  
+          Desde aquí vas a poder ver de un vistazo tus resultados, rendimiento de embudos,  
+          métricas de conversión y los avances de cada cliente o campaña.
+        </p>
+        <p className="mt-3 text-gray-400">
+          Próximamente vas a tener integración con tus datos reales de ventas,  
+          WhatsApp Business API y reportes automáticos.
+        </p>
+      </div>
+    </main>
+  );
+}
 
-        <div className="h-8" />
-      </main>
+function Card({ title, value, color }: { title: string; value: string; color: string }) {
+  return (
+    <div className={`rounded-xl p-5 border border-[#233043] ${color}`}>
+      <p className="text-gray-400 text-sm mb-1">{title}</p>
+      <h3 className="text-2xl font-semibold">{value}</h3>
     </div>
   );
 }
