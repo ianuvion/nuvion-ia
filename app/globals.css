@@ -1,3 +1,39 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* === Temas Nuvion IA === */
+:root {
+  --bg: #0a1018;
+  --panel: #0f1722;
+  --text: #e6edf3;
+}
+
+.theme-dark {
+  --bg: #0a1018;
+  --panel: #0f1722;
+  --text: #e6edf3;
+}
+
+.theme-semidark {
+  --bg: #0e1420;
+  --panel: #121a28;
+  --text: #f0f4f8;
+}
+
+.theme-light {
+  --bg: #f7f9fc;
+  --panel: #ffffff;
+  --text: #0b1220;
+}
+
+/* aplico variables al body básicos */
+html, body {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+/* si tenés contenedores/paneles, podés usar var(--panel) */
+.card, .panel, .box {
+  background-color: var(--panel);
+  color: var(--text);
+}
