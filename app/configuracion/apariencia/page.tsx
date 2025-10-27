@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function AparienciaPage() {
@@ -7,20 +8,25 @@ export default function AparienciaPage() {
 
   useEffect(() => {
     const saved = localStorage.getItem('brandTheme');
-    if (saved === 'semi-dark' || saved === 'light' || saved === 'dark') {
-      setTheme(saved);
-    }
+    if (saved === 'semi-dark' || saved === 'light' || saved === 'dark') setTheme(saved);
   }, []);
 
   useEffect(() => {
     localStorage.setItem('brandTheme', theme);
-    // si ya tenés lógica de aplicar clases al <html>, hacelo acá
-    // document.documentElement.classList.toggle('light', theme === 'light')
   }, [theme]);
 
   return (
     <section>
-      <h2 className="text-xl font-semibold mb-4">Apariencia</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold">Apariencia</h2>
+        <Link
+          href="/configuracion"
+          className="text-sm px-3 py-2 rounded border border-white/20 hover:bg-white/5"
+        >
+          Ir a General (Logo)
+        </Link>
+      </div>
+
       <div className="flex gap-3">
         <button
           onClick={() => setTheme('dark')}
