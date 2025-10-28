@@ -4,57 +4,34 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-const DEFAULT_LOGO = '/icon.png'; // fallback
+// OJO: ruta relativa porque Navbar está en app/components
+import { getBrandLogoUrl } from '../../lib/brand';
 
 export default function Navbar() {
-  const [logoUrl, setLogoUrl] = useState<string>(DEFAULT_LOGO);
+  const [logoUrl, setLogoUrl] = useState('/icon.png');
 
-  // Lee el logo persistido y escucha cambios (evento y storage)
   useEffect(() => {
-    const read = () =>
-      setLogoUrl(localStorage.getItem('brandLogoUrl') || DEFAULT_LOGO);
-
-    read();
-
-    const onBrandUpdated = () => read();
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === 'brandLogoUrl') read();
-    };
-
-    window.addEventListener('brand:updated', onBrandUpdated);
-    window.addEventListener('storage', onStorage);
-    return () => {
-      window.removeEventListener('brand:updated', onBrandUpdated);
-      window.removeEventListener('storage', onStorage);
-    };
+    setLogoUrl(getBrandLogoUrl());
+    const handler = () => setLogoUrl(getBrandLogoUrl());
+    window.addEventListener('brand:logo-updated', handler);
+    return () => window.removeEventListener('brand:logo-updated', handler);
   }, []);
 
   return (
-    <header className="w-full border-b border-white/10 bg-background/60 backdrop-blur">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex items-center gap-3">
-          {/* si falla la carga del S3, volvemos al default */}
-          {/* @ts-ignore */}
-          <Image
-            src={logoUrl}
-            alt="Nuvion IA"
-            width={32}
-            height={32}
-            onError={() => setLogoUrl(DEFAULT_LOGO)}
-            className="rounded"
-          />
-          <span className="font-semibold">Nuvion IA</span>
-        </Link>
+    <nav className="flex items-center justify-between px-4 py-3">
+      <Link href="/inicio" className="flex items-center gap-2">
+        <Image src={logoUrl} alt="Logo" width={28} height={28} className="rounded" priority />
+        <span className="font-semibold">Nuvion IA</span>
+      </Link>
 
-        <ul className="flex items-center gap-6 text-sm">
-          <li><Link href="/inicio">Inicio</Link></li>
-          <li><Link href="/dashboard">Dashboard</Link></li>
-          <li><Link href="/clientes">Clientes</Link></li>
-          <li><Link href="/reportes">Reportes</Link></li>
-          <li><Link href="/contacto">Contacto</Link></li>
-          <li><Link href="/configuracion">Configuración</Link></li>
-        </ul>
-      </nav>
-    </header>
+      <div className="flex items-center gap-4 text-sm">
+        <Link href="/inicio">Inicio</Link>
+        <Link href="/dashboard">Dashboard</Link>
+        <Link href="/clientes">Clientes</Link>
+        <Link href="/reportes">Reportes</Link>
+        <Link href="/contacto">Contacto</Link>
+        <Link href="/configuracion">Configuración</Link>
+      </div>
+    </nav>
   );
 }
