@@ -1,51 +1,56 @@
-"use client";
-
 import Image from "next/image";
-import Link from "next/link";
 
-export default function Home() {
+export const metadata = {
+  title: "Nuvion IA",
+  description: "Impulsá tus ventas con IA conversacional",
+};
+
+export default function HomePage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-800 via-slate-800 to-slate-700 flex flex-col items-center justify-center text-center text-slate-100">
-      {/* Logo metálico */}
-      <Image
-        src="/icon.png"
-        alt="Nuvion IA"
-        width={160}
-        height={160}
-        className="mb-6 brightness-125 drop-shadow-[0_0_16px_rgba(255,255,255,0.2)] ring-2 ring-white/10 rounded-2xl"
-        priority
+    <main className="relative min-h-[80vh] overflow-hidden bg-gradient-to-b from-[#0b2a58] to-[#081c3a]">
+      {/* Glow suave detrás del logo */}
+      <div
+        className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
+        style={{
+          background:
+            "radial-gradient(closest-side, rgba(0,200,255,.35), rgba(0,200,255,.12) 55%, rgba(0,0,0,0) 70%)",
+        }}
       />
 
-      {/* Nombre */}
-      <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-        Bienvenido a <span className="text-white">Nuvion IA</span>
-      </h1>
+      <section className="mx-auto flex max-w-5xl flex-col items-center gap-8 px-6 py-20 text-center">
+        <div className="relative">
+          <Image
+            src="/icon.png"
+            alt="Nuvion IA"
+            width={200}
+            height={200}
+            priority
+            className="drop-shadow-[0_0_25px_rgba(0,200,255,0.55)]"
+          />
+        </div>
 
-      {/* Subtexto */}
-      <p className="mt-3 text-slate-300 max-w-md">
-        Plataforma inteligente para automatizar tu negocio con tecnología IA.
-      </p>
+        <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
+          Impulsá tus ventas con IA conversacional
+        </h1>
+        <p className="max-w-2xl text-lg text-white/80">
+          Bandeja unificada, automatizaciones y reportes en tiempo real.
+        </p>
 
-      {/* Botones de acceso rápido */}
-      <div className="mt-8 flex gap-4">
-        <Link
-          href="/dashboard"
-          className="rounded-lg border border-slate-500/40 bg-slate-700/50 px-4 py-2 text-sm hover:bg-slate-600/60 transition"
-        >
-          Ir al Dashboard
-        </Link>
-        <Link
-          href="/clientes"
-          className="rounded-lg border border-slate-500/40 bg-slate-700/50 px-4 py-2 text-sm hover:bg-slate-600/60 transition"
-        >
-          Ver Clientes
-        </Link>
-      </div>
-
-      {/* Footer simple */}
-      <footer className="absolute bottom-4 text-xs text-slate-400">
-        © {new Date().getFullYear()} Nuvion IA — Todos los derechos reservados.
-      </footer>
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href="/dashboard"
+            className="rounded-xl bg-cyan-500 px-5 py-3 font-medium text-white hover:bg-cyan-400"
+          >
+            Ir al panel
+          </a>
+          <a
+            href="/clientes"
+            className="rounded-xl border border-white/20 px-5 py-3 font-medium text-white/90 hover:bg-white/10"
+          >
+            Ver clientes
+          </a>
+        </div>
+      </section>
     </main>
   );
 }
