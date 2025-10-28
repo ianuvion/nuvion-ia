@@ -11,3 +11,11 @@ export function getBrandLogoUrl(): string {
     return FALLBACK;
   }
 }
+
+export function setBrandLogoUrl(url: string) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(BRAND_LOGO_KEY, url);
+    window.dispatchEvent(new Event('brand:logo-updated'));
+  } catch {}
+}
