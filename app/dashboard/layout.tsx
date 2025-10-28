@@ -1,68 +1,32 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Home } from "lucide-react";
 
-function NavLink({
-  href,
-  label,
-}: {
-  href: string;
-  label: string;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
   return (
-    <Link
-      href={href}
-      className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition"
-    >
-      {label}
-    </Link>
-  );
-}
-
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-slate-100">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-900/70 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-          {/* Brand + Nav */}
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2">
-              <img
-                src="/icon.png"
-                alt="Nuvion IA"
-                className="h-7 w-7 rounded-md"
-              />
-              <span className="font-semibold tracking-tight">Nuvion IA</span>
-            </Link>
-
-            <nav className="hidden md:flex items-center gap-1 ml-6">
-              <NavLink href="/dashboard" label="Inicio" />
-              <NavLink href="/clientes" label="Clientes" />
-              <NavLink href="/reportes" label="Reportes" />
-              <NavLink href="/configuracion" label="Configuración" />
-              <NavLink href="/contacto" label="Contacto" />
-            </nav>
-          </div>
-
-          {/* Actions (derecha) */}
-          <div className="flex items-center gap-2">
-            <Link
-              href="/logout"
-              className="inline-flex items-center gap-2 rounded-md border border-white/10 px-3 py-1.5 text-sm hover:bg-white/10 transition"
-            >
-              Cerrar sesión
-            </Link>
-          </div>
-        </div>
-      </header>
-
+    <div className="flex min-h-screen flex-col">
       {/* Contenido principal */}
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {children}
-      </main>
+      <div className="flex-1">{children}</div>
+
+      {/* Barra inferior */}
+      <footer className="sticky bottom-0 z-20 border-t bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+        <nav className="mx-auto flex max-w-5xl items-center justify-between px-4 py-2">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+            aria-current={pathname === "/dashboard" ? "page" : undefined}
+          >
+            <Home className="h-4 w-4" />
+            Inicio
+          </Link>
+
+          {/* Acá podrías agregar más botones si querés */}
+        </nav>
+      </footer>
     </div>
   );
 }
