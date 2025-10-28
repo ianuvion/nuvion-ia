@@ -1,43 +1,54 @@
-"use client";
+import Link from "next/link";
 
-import { useState, useEffect } from "react";
+export const metadata = { title: "Configuración — General" };
 
-export default function ConfiguracionPage() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-
-  useEffect(() => {
-    const stored = localStorage.getItem("theme");
-    if (stored === "dark") {
-      setTheme("dark");
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const next = theme === "light" ? "dark" : "light";
-    setTheme(next);
-    localStorage.setItem("theme", next);
-    if (next === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
-
+export default function ConfigGeneralPage() {
   return (
-    <main className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-        Configuración de apariencia
-      </h1>
-      <p className="text-gray-600 dark:text-gray-300 mb-6">
-        Activá o desactivá el modo oscuro para todo Nuvion IA.
-      </p>
-      <button
-        onClick={toggleTheme}
-        className="rounded-xl bg-indigo-600 px-5 py-2 font-medium text-white hover:bg-indigo-500 dark:bg-yellow-400 dark:text-black"
-      >
-        Cambiar a modo {theme === "light" ? "oscuro" : "claro"}
-      </button>
+    <main className="mx-auto max-w-4xl px-4 py-8 space-y-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-semibold">Configuración</h1>
+        <div className="flex gap-2">
+          <Link href="/dashboard" className="rounded-lg border px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-900">
+            ← Volver al Dashboard
+          </Link>
+          <Link href="/" className="rounded-lg border px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-900">Inicio</Link>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-2">
+        <span className="rounded-lg border bg-slate-100 px-3 py-1.5 dark:bg-slate-800">General</span>
+        <Link href="/configuracion/apariencia" className="rounded-lg border px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-900">
+          Apariencia
+        </Link>
+      </div>
+
+      {/* Bloque LOGO */}
+      <section className="rounded-2xl border p-6">
+        <h2 className="text-xl font-semibold mb-2">Logo</h2>
+        <p className="text-sm text-slate-500 mb-4">
+          Cargá el logo que se muestra en la cabecera y la página de inicio.
+        </p>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/configuracion/apariencia"
+            className="rounded-lg px-3 py-2 bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+          >
+            Ir a Apariencia (colores/tema)
+          </Link>
+          <Link
+            href="/contacto"
+            className="rounded-lg border px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-900"
+          >
+            Cambiar logo (enviar archivo)
+          </Link>
+        </div>
+
+        <p className="mt-4 text-xs text-slate-500">
+          * Si preferís, pasame el PNG/SVG y yo te lo ubico en <code>/public/icon.png</code>.
+        </p>
+      </section>
     </main>
   );
 }
