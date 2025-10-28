@@ -1,56 +1,60 @@
-// components/Navbar.tsx
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useMemo } from "react";
+import Image from 'next/image';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
-const links = [
-  { href: "/", label: "Inicio" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/clientes", label: "Clientes" },
-  { href: "/reportes", label: "Reportes" },
-  { href: "/contacto", label: "Contacto" },
-  { href: "/configuracion", label: "Configuración" },
-];
+const DEFAULT_LOGO = '/icon.png'; // fallback
 
 export default function Navbar() {
-  const pathname = usePathname();
+  const [logoUrl, setLogoUrl] = useState<string>(DEFAULT_LOGO);
 
-  const items = useMemo(
-    () =>
-      links.map((l) => {
-        const active =
-          l.href === "/"
-            ? pathname === "/"
-            : pathname?.startsWith(l.href);
+  // Lee el logo persistido y escucha cambios (evento y storage)
+  useEffect(() => {
+    const read = () =>
+      setLogoUrl(localStorage.getItem('brandLogoUrl') || DEFAULT_LOGO);
 
-        return (
-          <Link
-            key={l.href}
-            href={l.href}
-            className={[
-              "px-3 py-2 rounded-md text-sm font-medium transition-colors",
-              active
-                ? "bg-slate-800 text-white"
-                : "text-slate-300 hover:text-white hover:bg-slate-800/60",
-            ].join(" ")}
-          >
-            {l.label}
-          </Link>
-        );
-      }),
-    [pathname]
-  );
+    read();
+
+    const onBrandUpdated = () => read();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'brandLogoUrl') read();
+    };
+
+    window.addEventListener('brand:updated', onBrandUpdated);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener('brand:updated', onBrandUpdated);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/80 backdrop-blur">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-        <Link href="/" className="font-semibold text-slate-100">
-          Nuvion IA
+    <header className="w-full border-b border-white/10 bg-background/60 backdrop-blur">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+        <Link href="/" className="flex items-center gap-3">
+          {/* si falla la carga del S3, volvemos al default */}
+          {/* @ts-ignore */}
+          <Image
+            src={logoUrl}
+            alt="Nuvion IA"
+            width={32}
+            height={32}
+            onError={() => setLogoUrl(DEFAULT_LOGO)}
+            className="rounded"
+          />
+          <span className="font-semibold">Nuvion IA</span>
         </Link>
-        <nav className="flex items-center gap-1">{items}</nav>
-      </div>
+
+        <ul className="flex items-center gap-6 text-sm">
+          <li><Link href="/inicio">Inicio</Link></li>
+          <li><Link href="/dashboard">Dashboard</Link></li>
+          <li><Link href="/clientes">Clientes</Link></li>
+          <li><Link href="/reportes">Reportes</Link></li>
+          <li><Link href="/contacto">Contacto</Link></li>
+          <li><Link href="/configuracion">Configuración</Link></li>
+        </ul>
+      </nav>
     </header>
   );
 }
