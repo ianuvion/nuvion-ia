@@ -1,21 +1,21 @@
 // lib/brand.ts
-export const BRAND_LOGO_KEY = 'brandLogoUrl';
-const FALLBACK = '/icon.png';
+const LS_KEY = 'nuvion.brand.logoUrl';
+const DEFAULT_LOGO = '/icon.png';
 
 export function getBrandLogoUrl(): string {
-  if (typeof window === 'undefined') return FALLBACK;
-  try {
-    const v = window.localStorage.getItem(BRAND_LOGO_KEY);
-    return v && v.length > 0 ? v : FALLBACK;
-  } catch {
-    return FALLBACK;
-  }
+  if (typeof window === 'undefined') return DEFAULT_LOGO;
+  return localStorage.getItem(LS_KEY) || DEFAULT_LOGO;
 }
 
 export function setBrandLogoUrl(url: string) {
   if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(BRAND_LOGO_KEY, url);
-    window.dispatchEvent(new Event('brand:logo-updated'));
-  } catch {}
+  localStorage.setItem(LS_KEY, url);
+  // Para que el Navbar se refresque sin F5
+  window.dispatchEvent(new CustomEvent('brand:logo-updated'));
+}
+
+export function clearBrandLogo() {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(LS_KEY);
+  window.dispatchEvent(new CustomEvent('brand:logo-updated'));
 }
