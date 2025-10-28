@@ -1,78 +1,72 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import Link from "next/link";
+import { useTheme } from "@/app/providers/ThemeProvider";
+
+export const metadata = { title: "Configuración — Apariencia" };
 
 export default function AparienciaPage() {
-  const [theme, setTheme] = useState<string>('semi-dark');
-
-  // Cargar el tema guardado
-  useEffect(() => {
-    const saved = localStorage.getItem('brandTheme');
-    if (saved) setTheme(saved);
-  }, []);
-
-  // Aplicar el tema cuando cambia
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    document.documentElement.classList.toggle('dark', theme !== 'light');
-    localStorage.setItem('brandTheme', theme);
-  }, [theme]);
+  const { theme, setTheme } = useTheme();
 
   return (
-    <section>
-      {/* Encabezado */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">Apariencia</h2>
-        <Link
-          href="/configuracion"
-          className="text-sm px-3 py-2 rounded border border-white/20 hover:bg-white/5"
-        >
-          Ir a General (Logo)
+    <main className="mx-auto max-w-4xl px-4 py-8 space-y-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-semibold">Configuración</h1>
+        <div className="flex gap-2">
+          <Link href="/dashboard" className="rounded-lg border px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-900">
+            ← Volver al Dashboard
+          </Link>
+          <Link href="/" className="rounded-lg border px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-900">Inicio</Link>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-2">
+        <Link href="/configuracion" className="rounded-lg border px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-900">
+          General
         </Link>
+        <span className="rounded-lg border bg-slate-100 px-3 py-1.5 dark:bg-slate-800">Apariencia</span>
       </div>
 
-      {/* Opciones de tema */}
-      <div className="flex gap-3 mb-8">
-        <button
-          onClick={() => setTheme('dark')}
-          className={`px-4 py-2 rounded border transition ${
-            theme === 'dark'
-              ? 'border-white/70 bg-white/10'
-              : 'border-white/20 hover:bg-white/5'
-          }`}
-        >
-          Oscuro
-        </button>
+      <section className="rounded-2xl border p-6">
+        <h2 className="text-xl font-semibold mb-2">Apariencia</h2>
+        <p className="text-sm text-slate-500 mb-4">
+          Activá o desactivá el modo oscuro para todo Nuvion IA. Se guarda en tu dispositivo.
+        </p>
 
-        <button
-          onClick={() => setTheme('semi-dark')}
-          className={`px-4 py-2 rounded border transition ${
-            theme === 'semi-dark'
-              ? 'border-white/70 bg-white/10'
-              : 'border-white/20 hover:bg-white/5'
-          }`}
-        >
-          Semi-dark
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => setTheme("dark")}
+            className={`rounded-lg px-3 py-2 border hover:opacity-90 ${
+              theme === "dark" ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900" : ""
+            }`}
+          >
+            Oscuro
+          </button>
 
-        <button
-          onClick={() => setTheme('light')}
-          className={`px-4 py-2 rounded border transition ${
-            theme === 'light'
-              ? 'border-white/70 bg-white/10 text-black bg-white/80'
-              : 'border-white/20 hover:bg-white/5'
-          }`}
-        >
-          Claro
-        </button>
-      </div>
+          <button
+            onClick={() => setTheme("light")}
+            className={`rounded-lg px-3 py-2 border hover:opacity-90 ${
+              theme === "light" ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900" : ""
+            }`}
+          >
+            Claro
+          </button>
+        </div>
 
-      {/* Mensaje visual */}
-      <p className="text-sm text-white/60">
-        El modo <span className="text-white">{theme}</span> se aplicó automáticamente y se
-        guardó en tus preferencias.
-      </p>
-    </section>
+        <p className="mt-4 text-xs text-slate-500">
+          El modo <b>{theme}</b> se aplicó automáticamente y se guardó en tus preferencias.
+        </p>
+
+        <div className="mt-6">
+          <Link
+            href="/configuracion"
+            className="rounded-lg border px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-900"
+          >
+            Ir a General (Logo)
+          </Link>
+        </div>
+      </section>
+    </main>
   );
 }
