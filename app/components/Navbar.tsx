@@ -1,60 +1,56 @@
-'use client';
+// components/Navbar.tsx
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import React from 'react';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useMemo } from "react";
 
-const LINKS = [
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/clientes', label: 'Clientes' },
-  { href: '/reportes', label: 'Reportes' },
-  { href: '/configuracion/brand', label: 'Brand' },
+const links = [
+  { href: "/", label: "Inicio" },
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/clientes", label: "Clientes" },
+  { href: "/reportes", label: "Reportes" },
+  { href: "/contacto", label: "Contacto" },
+  { href: "/configuracion", label: "Configuración" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
 
-  return (
-    <header className="sticky top-0 z-50 border-b border-[#233043] bg-[#0b1220]/80 backdrop-blur">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-        {/* Logo + nombre */}
-        <Link href="/" className="flex items-center gap-3">
-          <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#0e1628] ring-1 ring-blue-400/30 shadow-[0_0_25px] shadow-blue-500/20">
-            <Image
-              src="/icon.png"
-              alt="Nuvion IA"
-              width={28}
-              height={28}
-              className="rounded-md"
-              priority
-            />
-          </span>
-          <span className="text-[15px] font-semibold tracking-wide">Nuvion IA</span>
-        </Link>
+  const items = useMemo(
+    () =>
+      links.map((l) => {
+        const active =
+          l.href === "/"
+            ? pathname === "/"
+            : pathname?.startsWith(l.href);
 
-        {/* Links */}
-        <ul className="flex items-center gap-2">
-          {LINKS.map((l) => {
-            const active = pathname === l.href;
-            return (
-              <li key={l.href}>
-                <Link
-                  href={l.href}
-                  className={[
-                    'px-3 py-2 rounded-lg text-sm transition-colors',
-                    active
-                      ? 'bg-[#132034] text-white'
-                      : 'text-gray-300 hover:text-white hover:bg-[#0f1b2e]',
-                  ].join(' ')}
-                >
-                  {l.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+        return (
+          <Link
+            key={l.href}
+            href={l.href}
+            className={[
+              "px-3 py-2 rounded-md text-sm font-medium transition-colors",
+              active
+                ? "bg-slate-800 text-white"
+                : "text-slate-300 hover:text-white hover:bg-slate-800/60",
+            ].join(" ")}
+          >
+            {l.label}
+          </Link>
+        );
+      }),
+    [pathname]
+  );
+
+  return (
+    <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/80 backdrop-blur">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+        <Link href="/" className="font-semibold text-slate-100">
+          Nuvion IA
+        </Link>
+        <nav className="flex items-center gap-1">{items}</nav>
+      </div>
     </header>
   );
 }
