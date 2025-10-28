@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { useTheme } from "@/app/providers/ThemeProvider";
 
-export const metadata = { title: "Configuración — Apariencia" };
-
 export default function AparienciaPage() {
   const { theme, setTheme } = useTheme();
 
@@ -44,7 +42,7 @@ export default function AparienciaPage() {
             Oscuro
           </button>
 
-          <button
+        <button
             onClick={() => setTheme("light")}
             className={`rounded-lg px-3 py-2 border hover:opacity-90 ${
               theme === "light" ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900" : ""
