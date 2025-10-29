@@ -17,11 +17,6 @@ export function setStoredTheme(t: AppTheme) {
 }
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    const t = getStoredTheme();
-    applyThemeClass(t);
-  }, []);
-
   const applyThemeClass = (t: AppTheme) => {
     const root = document.documentElement;
     root.classList.remove('theme-dark', 'theme-semidark', 'theme-light');
@@ -30,7 +25,12 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
     else root.classList.add('theme-dark');
   };
 
-  // escucha cambios externos (p.ej. desde otro tab)
+  useEffect(() => {
+    const t = getStoredTheme();
+    applyThemeClass(t);
+  }, []);
+
+  // escucha cambios externos (otro tab)
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === THEME_KEY && e.newValue) {
