@@ -31,72 +31,67 @@ export default function ReportesPage() {
   }, [query]);
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
-      <h1 className="mb-6 text-3xl font-semibold">Reportes</h1>
+    <div className="min-h-screen bg-[#0b1420] text-white px-6 py-10">
+      <div className="mx-auto max-w-6xl">
+        <h1 className="mb-6 text-3xl font-semibold">Reportes</h1>
 
-      <div className="mb-5">
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Buscar reporte…"
-          className="w-full max-w-md rounded-md border border-slate-200 bg-white px-4 py-2 text-slate-900 outline-none
-                     focus:ring-2 focus:ring-sky-500
-                     dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
-        />
-      </div>
+        <div className="mb-5">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar reporte…"
+            className="w-full max-w-md rounded-md bg-[#0f1b2b] border border-[#233348] px-4 py-2 outline-none focus:ring-2 focus:ring-[#1f9eff]"
+          />
+        </div>
 
-      <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm
-                      dark:border-slate-800 dark:bg-slate-950">
-        <table className="min-w-full text-left">
-          <thead className="text-sm text-slate-500 dark:text-slate-400">
-            <tr className="border-b border-slate-200 dark:border-slate-800">
-              <th className="px-4 py-3">ID</th>
-              <th className="px-4 py-3">Nombre</th>
-              <th className="px-4 py-3">Estado</th>
-              <th className="px-4 py-3">Fecha</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtrados.map((r) => (
-              <tr
-                key={r.id}
-                className="border-b border-slate-100 hover:bg-slate-50
-                           dark:border-slate-900 dark:hover:bg-slate-900/50"
-              >
-                <td className="px-4 py-3 text-slate-800 dark:text-slate-200">{r.id}</td>
-                <td className="px-4 py-3 text-slate-800 dark:text-slate-200">{r.nombre}</td>
-                <td className="px-4 py-3">
-                  <span
-                    className={[
-                      'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
-                      r.estado === 'Completado'
-                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
-                        : r.estado === 'En proceso'
-                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
-                        : 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
-                    ].join(' ')}
-                  >
-                    {r.estado}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-slate-800 dark:text-slate-200">{r.fecha}</td>
-              </tr>
-            ))}
-
-            {filtrados.length === 0 && (
+        <div className="overflow-x-auto rounded-lg border border-[#233348] bg-[#0f1b2b]">
+          <table className="min-w-full text-left">
+            <thead className="bg-[#122033] text-sm text-[#9ab0c3]">
               <tr>
-                <td className="px-4 py-6 text-center text-slate-500 dark:text-slate-400" colSpan={4}>
-                  No hay resultados para “{query}”.
-                </td>
+                <th className="px-4 py-3">ID</th>
+                <th className="px-4 py-3">Nombre</th>
+                <th className="px-4 py-3">Estado</th>
+                <th className="px-4 py-3">Fecha</th>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {filtrados.map((r) => (
+                <tr key={r.id} className="border-t border-[#1a2a40] hover:bg-[#122033]">
+                  <td className="px-4 py-3">{r.id}</td>
+                  <td className="px-4 py-3">{r.nombre}</td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={
+                        'inline-flex items-center rounded-full px-2 py-1 text-xs ' +
+                        (r.estado === 'Completado'
+                          ? 'bg-emerald-500/15 text-emerald-300'
+                          : r.estado === 'En proceso'
+                          ? 'bg-amber-500/15 text-amber-300'
+                          : 'bg-sky-500/15 text-sky-300')
+                      }
+                    >
+                      {r.estado}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">{r.fecha}</td>
+                </tr>
+              ))}
 
-      <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
-        *Placeholder visual. Luego lo conectamos a datos reales (S3/DB/API).
-      </p>
-    </main>
+              {filtrados.length === 0 && (
+                <tr>
+                  <td className="px-4 py-6 text-center text-[#9ab0c3]" colSpan={4}>
+                    No hay resultados para “{query}”.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <p className="mt-4 text-sm text-[#9ab0c3]">
+          *Placeholder visual. Después lo conectamos a datos reales.
+        </p>
+      </div>
+    </div>
   );
 }
