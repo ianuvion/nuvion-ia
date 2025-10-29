@@ -1,54 +1,38 @@
-import Link from "next/link";
-
-export const metadata = { title: "Configuración — General" };
-
+// app/configuracion/page.tsx
 export default function ConfigGeneralPage() {
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8 space-y-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-semibold">Configuración</h1>
-        <div className="flex gap-2">
-          <Link href="/dashboard" className="rounded-lg border px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-900">
-            ← Volver al Dashboard
-          </Link>
-          <Link href="/" className="rounded-lg border px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-900">Inicio</Link>
+    <div className="space-y-8">
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+        <h2 className="mb-4 text-xl font-semibold">Logo de la plataforma</h2>
+
+        <div className="flex items-center gap-16">
+          <div className="flex flex-col items-center">
+            <img
+              src="/icon.png"
+              alt="Logo actual"
+              className="h-20 w-20 rounded-xl shadow"
+            />
+            <p className="mt-2 text-xs text-slate-500">/public/icon.png</p>
+          </div>
+
+          <div className="max-w-xl text-sm leading-6 text-slate-700 dark:text-slate-300">
+            <p className="mb-3">
+              Para cambiar el logo, reemplazá el archivo{" "}
+              <code className="rounded bg-slate-100 px-1 py-0.5 text-slate-700 dark:bg-slate-900 dark:text-slate-200">
+                /public/icon.png
+              </code>{" "}
+              en GitHub (PNG cuadrado, recomendado 512×512).
+            </p>
+            <a
+              href="https://github.com/ianuvion/nuvion-ia/tree/main/public"
+              target="_blank"
+              className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              Abrir carpeta <code className="ml-1">/public</code> en GitHub
+            </a>
+          </div>
         </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-2">
-        <span className="rounded-lg border bg-slate-100 px-3 py-1.5 dark:bg-slate-800">General</span>
-        <Link href="/configuracion/apariencia" className="rounded-lg border px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-900">
-          Apariencia
-        </Link>
-      </div>
-
-      {/* Bloque LOGO */}
-      <section className="rounded-2xl border p-6">
-        <h2 className="text-xl font-semibold mb-2">Logo</h2>
-        <p className="text-sm text-slate-500 mb-4">
-          Cargá el logo que se muestra en la cabecera y la página de inicio.
-        </p>
-
-        <div className="flex items-center gap-3">
-          <Link
-            href="/configuracion/apariencia"
-            className="rounded-lg px-3 py-2 bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-          >
-            Ir a Apariencia (colores/tema)
-          </Link>
-          <Link
-            href="/contacto"
-            className="rounded-lg border px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-900"
-          >
-            Cambiar logo (enviar archivo)
-          </Link>
-        </div>
-
-        <p className="mt-4 text-xs text-slate-500">
-          * Si preferís, pasame el PNG/SVG y yo te lo ubico en <code>/public/icon.png</code>.
-        </p>
       </section>
-    </main>
+    </div>
   );
 }
