@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-const STORAGE_KEY = 'nuvion_logo_dataurl';
+const KEY = 'nuvion_logo_dataurl';
 
 export default function LogoImage({
   className = 'h-8 w-8 rounded-md',
@@ -15,19 +15,18 @@ export default function LogoImage({
 
   React.useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(KEY);
       setSrc(stored || '/icon.png');
     } catch {
       setSrc('/icon.png');
     }
 
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEY) {
-        setSrc(e.newValue || '/icon.png');
-      }
+    // sincroniza entre pestañas
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === KEY) setSrc(e.newValue || '/icon.png');
     };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
   if (!src) return null;
