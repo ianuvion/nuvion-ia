@@ -37,3 +37,13 @@ html, body {
   background-color: var(--panel);
   color: var(--text);
 }
+/* Modo semi-dark: fondo azul suave y textos claros */
+:root[data-theme="semi"] body {
+  background: radial-gradient(1200px 500px at 50% 120px, #0e3a66 0%, #0b2540 60%, #061a2e 100%);
+  color: #e6eef8;
+}
+:root[data-theme="semi"] header,
+:root[data-theme="semi"] footer {
+  background: rgba(6, 26, 46, 0.8);
+  border-color: #0f2d4d;
+}
