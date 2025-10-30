@@ -1,43 +1,65 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { getStoredTheme, setStoredTheme, AppTheme } from './ThemeProvider';
+import { useEffect, useState } from "react";
+
+type AppTheme = "dark" | "semi" | "light";
+const THEME_KEY = "nuvion_theme";
+
+function applyTheme(t: AppTheme) {
+  const root = document.documentElement;
+  root.classList.remove("theme-dark", "theme-semidark", "theme-light");
+  if (t === "light") root.classList.add("theme-light");
+  else if (t === "semi") root.classList.add("theme-semidark");
+  else root.classList.add("theme-dark");
+  localStorage.setItem(THEME_KEY, t);
+  // por si en el futuro escuchamos este evento desde otro lado
+  window.dispatchEvent(new StorageEvent("storage", { key: THEME_KEY, newValue: t }));
+}
 
 export default function ThemeSwitcher() {
-  const [theme, setTheme] = useState<AppTheme>('dark');
+  const [value, setValue] = useState<AppTheme>("dark");
 
   useEffect(() => {
-    setTheme(getStoredTheme());
+    const saved = (localStorage.getItem(THEME_KEY) as AppTheme) || "dark";
+    setValue(saved);
+    applyTheme(saved);
   }, []);
 
-  const apply = (t: AppTheme) => {
-    setTheme(t);
-    setStoredTheme(t);
-    const root = document.documentElement;
-    root.classList.remove('theme-dark', 'theme-semidark', 'theme-light');
-    if (t === 'light') root.classList.add('theme-light');
-    else if (t === 'semi') root.classList.add('theme-semidark');
-    else root.classList.add('theme-dark');
+  const setTheme = (t: AppTheme) => {
+    setValue(t);
+    applyTheme(t);
   };
 
-  const Btn = ({ value, label }: { value: AppTheme; label: string }) => (
-    <button
-      onClick={() => apply(value)}
-      className={`px-3 py-2 rounded-lg border text-sm transition
-        ${theme === value ? 'border-white/60 bg-white/10' : 'border-white/10 hover:bg-white/5'}`}
-    >
-      {label}
-    </button>
-  );
+  const btn =
+    "px-3 py-2 rounded-md border text-sm hover:opacity-90 transition";
+  const active = "ring-2 ring-blue-500";
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Apariencia</h2>
-      <p className="text-sm text-white/60">Elegí el tema de la interfaz. Se guarda en tu dispositivo.</p>
-      <div className="flex gap-2">
-        <Btn value="dark" label="Oscuro" />
-        <Btn value="semi" label="Semi-dark" />
-        <Btn value="light" label="Claro" />
+    <div className="flex flex-wrap gap-8">
+      <div className="space-y-2">
+        <p className="text-sm opacity-80">Tema actual</p>
+        <div className="text-lg font-semibold capitalize">{value}</div>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <button
+          className={`${btn} ${value === "dark" ? active : ""}`}
+          onClick={() => setTheme("dark")}
+        >
+          Oscuro
+        </button>
+        <button
+          className={`${btn} ${value === "semi" ? active : ""}`}
+          onClick={() => setTheme("semi")}
+        >
+          Semi-dark
+        </button>
+        <button
+          className={`${btn} ${value === "light" ? active : ""}`}
+          onClick={() => setTheme("light")}
+        >
+          Claro
+        </button>
       </div>
     </div>
   );
