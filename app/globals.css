@@ -1,47 +1,73 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* === Temas Nuvion IA === */
+
+/* ==========================================================
+   🎨 TEMAS NUVION IA — Sistema de colores global
+   ----------------------------------------------------------
+   - Oscuro        : predeterminado
+   - Semi-dark     : azul suave con contraste
+   - Claro         : fondo blanco con texto oscuro
+   ========================================================== */
+
+/* Variables por defecto */
 :root {
   --bg: #0a1018;
   --panel: #0f1722;
   --text: #e6edf3;
 }
 
+/* 🌑 Tema oscuro (default) */
 .theme-dark {
   --bg: #0a1018;
   --panel: #0f1722;
   --text: #e6edf3;
 }
 
+/* 🌗 Tema semi-dark (azul suave, texto claro) */
 .theme-semidark {
   --bg: #0e1420;
   --panel: #121a28;
   --text: #f0f4f8;
 }
 
+/* ☀️ Tema claro */
 .theme-light {
   --bg: #f7f9fc;
   --panel: #ffffff;
   --text: #0b1220;
 }
 
-/* aplico variables al body básicos */
+/* ==========================================================
+   🧱 Aplicación global de variables
+   ========================================================== */
+
 html, body {
   background-color: var(--bg);
   color: var(--text);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* si tenés contenedores/paneles, podés usar var(--panel) */
+/* Paneles, tarjetas, etc. */
 .card, .panel, .box {
   background-color: var(--panel);
   color: var(--text);
 }
-/* Modo semi-dark: fondo azul suave y textos claros */
+
+/* ==========================================================
+   💫 Extra: Fondo con gradiente para modo semi-dark
+   ========================================================== */
+
 :root[data-theme="semi"] body {
-  background: radial-gradient(1200px 500px at 50% 120px, #0e3a66 0%, #0b2540 60%, #061a2e 100%);
+  background: radial-gradient(
+    1200px 500px at 50% 120px,
+    #0e3a66 0%,
+    #0b2540 60%,
+    #061a2e 100%
+  );
   color: #e6eef8;
 }
+
 :root[data-theme="semi"] header,
 :root[data-theme="semi"] footer {
   background: rgba(6, 26, 46, 0.8);
