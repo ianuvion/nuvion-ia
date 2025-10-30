@@ -1,0 +1,10 @@
+export default function HomePage() {
+  return (
+    <main className="flex min-h-screen items-center justify-center p-10">
+      <h1 className="text-4xl font-bold">Nuvion IA</h1>
+      <p className="mt-4 text-gray-600">
+        Dashboard en mantenimiento — volverá a estar online pronto.
+      </p>
+    </main>
+  );
+}
