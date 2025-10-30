@@ -6,7 +6,7 @@ export default function BrandLogo() {
   return (
     <div className="flex items-center gap-2">
       <Image
-        src="/icon-v2.png"        // logo metálico de Nuvion IA en /public
+        src="/icon.png"        // logo metálico de Nuvion IA en /public
         alt="Nuvion IA"
         width={32}
         height={32}
