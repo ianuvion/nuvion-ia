@@ -8,13 +8,22 @@ const THEME_KEY = "nuvion_theme";
 function applyTheme(t: AppTheme) {
   const root = document.documentElement;
   root.classList.remove("theme-dark", "theme-semidark", "theme-light");
-  if (t === "light") root.classList.add("theme-light");
-  else if (t === "semi") root.classList.add("theme-semidark");
-  else root.classList.add("theme-dark");
+
+  if (t === "light") {
+    root.classList.add("theme-light");
+    root.dataset.theme = "light";
+  } else if (t === "semi") {
+    root.classList.add("theme-semidark");
+    root.dataset.theme = "semi";
+  } else {
+    root.classList.add("theme-dark");
+    root.dataset.theme = "dark";
+  }
+
   localStorage.setItem(THEME_KEY, t);
-  // por si en el futuro escuchamos este evento desde otro lado
   window.dispatchEvent(new StorageEvent("storage", { key: THEME_KEY, newValue: t }));
 }
+
 
 export default function ThemeSwitcher() {
   const [value, setValue] = useState<AppTheme>("dark");
